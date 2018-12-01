@@ -25,6 +25,6 @@ hs_err_pid*
 # idea, maven
 /target/
 /.idea/
-/*.imi
+/*.iml
 /*.sql
 *.DS_Store
