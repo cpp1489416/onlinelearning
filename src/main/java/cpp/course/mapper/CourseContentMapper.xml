@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.course.mapper.CourseContentMapper">
+    <select id="listCourseContentsByCourseId" resultType="cpp.course.po.CourseContent">
+        select
+            id,
+            name,
+            courseId,
+            parentId,
+            sort
+        from course_content
+        where courseId = #{courseId}
+    </select>
+
+    <select id="getById" parameterType="int" resultType="cpp.course.po.CourseContent">
+        select *
+        from course_content
+        where id = #{id}
+    </select>
+
+    <select id="getMaxSortBeforeContent" parameterType="cpp.course.po.CourseContent"
+            resultType="cpp.course.po.CourseContent">
+        select
+            sort       sort,
+            name       name,
+            updateTime updateTime,
+            courseId   courseId,
+            parentId   parentId,
+            id         id
+        from course_content
+        where parentId = #{parentId} and sort &lt; #{sort}
+        order by sort desc
+        limit 0, 1
+    </select>
+
+    <select id="getMinSortAfterContent" parameterType="cpp.course.po.CourseContent"
+            resultType="cpp.course.po.CourseContent">
+        select
+            sort       sort,
+            name       name,
+            updateTime updateTime,
+            courseId   courseId,
+            parentId   parentId,
+            id         id
+        from course_content
+        where parentId = #{parentId} and sort &gt; #{sort}
+        order by sort
+        limit 0, 1
+    </select>
+
+    <update id="modify" parameterType="cpp.course.po.CourseContent">
+        update course_content
+        set sort = #{sort}, name = #{name}
+        where id = #{id}
+    </update>
+
+    <update id="moveSortBeforeRemove" parameterType="cpp.course.po.CourseContent">
+        update course_content
+        set sort = sort - 1
+        where parentId = #{parentId} and sort > #{sort}
+    </update>
+
+    <delete id="remove" parameterType="cpp.course.po.CourseContent">
+        delete from course_content
+        where id = #{id}
+    </delete>
+
+    <delete id="removeSubContentsByParentId" parameterType="int">
+        delete from course_content
+        where parentId = #{parentId}
+    </delete>
+
+    <insert id="addContent" parameterType="cpp.course.po.CourseContent">
+        insert into course_content (name, parentId, courseId, sort, text)
+        values (#{name}, #{parentId}, #{courseId}, #{sort}, #{text})
+    </insert>
+
+    <select id="getMaxSortByCourseIdAndParentId" parameterType="cpp.course.po.CourseContent" resultType="int">
+        select ifnull(max(sort), 0)
+        from course_content
+        where parentId = #{parentId} and courseId = #{courseId}
+    </select>
+
+    <update id="modifyText" parameterType="cpp.course.po.CourseContent">
+        update course_content set text = #{text} where id = #{id}
+    </update>
+</mapper>

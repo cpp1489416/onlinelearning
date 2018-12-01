@@ -1,0 +1,97 @@
+<div class="card border-primary" id="courseInfo">
+    <div class="card-header">课程信息</div>
+    <div class="card-body">
+        <form id="infoForm" class="form" role="form" action="#" onsubmit="return false">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">课程图片</label>
+                <div class="col-sm-8">
+                    <img :src="course.imageUrl" alt="不好意思，您的图片丢失了"
+                         style="height: 110px!important; width:200px!important;"/>
+                    <input class="form-control-file" id="headImageFile" type="file" @change="uploadImage">
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">课程名称</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="name" v-model="course.name" placeholder="请输入课程名称" required/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">课程种类</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="groupName" name="groupName" v-model="course.groupName" placeholder="请输入课程种类"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="description" class="col-sm-2 col-form-label">课程描述</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" rows="3" id="description" name="description" v-model="course.description"
+                              placeholder="请描述该课程"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-8 offset-sm-2">
+                    <input type="submit" class="btn btn-primary" id="modifyButton" value="更改信息"
+                           @click="modify"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    var vmCourseInfo = new Vue({
+        el: "#courseInfo",
+        data: {
+            course: {}
+        },
+        methods: {
+            load: function () {
+                $.ajax({
+                    type: "post",
+                    url: "../../course.action",
+                    data: {"courseId": courseId},
+                    success: function (data) {
+                        vmCourseInfo.course = data;
+                    }
+                })
+            },
+            modify: function () {
+                delete vmCourseInfo.createDate;
+                $.ajax({
+                    type: "post",
+                    url: "modifycourse.action",
+                    data: vmCourseInfo.course,
+                    success: function (data) {
+                        if (data.status == "success") {
+                            alert("修改成功");
+                        } else {
+                            alert(data.status);
+                        }
+                    }
+                });
+            },
+            uploadImage: function () {
+                var formFile = new FormData();
+                formFile.append("upfile", document.getElementById("headImageFile").files[0]); // 文件名一定要写正确，有后台 springmvc 中的参数对应
+                $.ajax({
+                    type: "post",
+                    url: "../../uploadfile.action",
+                    data: formFile,
+                    cache: false, // 文件不需要缓存
+                    processData: false, // processData 指对参数进行序列化处理 ，一定是false！！
+                    contentType: false, // 一定是false
+                    success: function(data) {
+                        vmCourseInfo.course.imageUrl=data.url;
+                    }
+                });
+            },
+
+        }
+    });
+
+    vmCourseInfo.load();
+
+</script>

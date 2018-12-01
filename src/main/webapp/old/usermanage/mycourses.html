@@ -1,0 +1,83 @@
+
+<div class="card border-primary">
+    <div class="card-header">我的课程</div>
+    <div class="card-body">
+        <button class="btn btn-primary" onclick="onAddButtonClick()">添加新课程</button>
+    </div>
+   <table id="courseTable" class="table table-striped table-hover ">
+        <thead>
+            <tr>
+                <th>课程名称</th>
+                <th>课程种类</th>
+                <th>课程说明</th>
+            </tr>
+        </thead>
+        <tbody id="courseTableBody">
+            <tr>
+                <td><a href="#" onclick="manageCourse(courseId)">courseName</a></td>
+                <td>groupName</td>
+                <td>description</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    init();
+
+    function init() {
+        $.ajax({
+            url: "../userinfo.action",
+            type: "POST",
+            success: function(data) {
+                if (data == null || data == "") {
+                    alert("请先登陆");
+                    window.location.href = "../../index.html";
+                }
+
+                getCourses(data.username);
+            },
+            error: function() {
+            }
+        })
+    }
+
+    function getCourses(username) {
+        $.ajax({
+            url: "courses.action",
+            type: "POST",
+            data: {
+                "username": username
+            },
+            success: function(data) {
+                var str = "";
+
+                for (var i = 0; i < data.length; ++i) {
+                    var course = data[i];
+                    var token = `
+                        <tr>
+                            <td><a href="#" onclick="manageCourse(courseId)">courseName</a></td>
+                            <td>groupName</td>
+                            <td>description</td>
+                        </tr>`;
+                    token = token.replace(/courseId/g, course.courseId);
+                    token = token.replace(/courseName/g, course.name);
+                    token = token.replace(/groupName/g, course.groupName);
+                    token = token.replace(/description/g, course.description);
+                    str += token;
+                }
+                $("#courseTableBody").html(str);
+            },
+            error: function() {}
+        });
+    }
+
+    function manageCourse(courseId) {             
+        window.location.href="coursemanage/manage.html?courseId=" + courseId;
+    }
+    
+    function onAddButtonClick() {
+        window.location.href="coursemanage/addcourse.html";
+    }
+
+</script>

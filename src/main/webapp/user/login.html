@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+
+        .box {
+            text-align: center;
+            width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="f-main" id="login">
+    <div class="types-block clearfix" style="text-align: center;">
+        <h3 class="types-title">登录</h3>
+        <form class="oc-form box" id="infoForm" onsubmit="return false">
+            <li>{{info}}</li>
+            <li><label>用户名</label>
+                <input name="username" value="" type="text" class="input-text" placeholder="请输入用户名"
+                       v-model="user.username">
+            </li>
+            <li><label>密码</label>
+                <input id="password" name="password" type="password" class="input-text" placeholder="请输入密码"
+                       v-model="user.password"
+                       autocomplete="off"/>
+            </li>
+
+            <li style="text-align: left;" v-show="out.code != 1">
+                <label></label>
+                <span style="color:red;">{{out.status}}</span>
+            </li>
+
+            <li class="clearfix" style="margin-top: 20px;">
+                <input type="submit" value="登录" class="btn" style="margin-right:20px;" @click="login">
+                <div class="btn" @click="register">注册</div>
+            </li>
+        </form>
+    </div>
+</div>
+<script>
+
+    var vmLogin = new Vue({
+        el: "#login",
+        data: {
+            out: {
+                code: 1,
+                status: ""
+            },
+            user: {
+                username: "",
+                password: ""
+            },
+            info: "请先登录，才能给您更好的体验"
+        },
+        methods: {
+            login: function () {
+                $.ajax({
+                    url: "login.action",
+                    type: "post",
+                    data: vmLogin.user,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            window.location.href = "user.html";
+                        } else {
+                            vmLogin.out = data;
+                        }
+                    }
+                });
+            },
+            register: function () {
+                vmHeader.showRegisterModal();
+            },
+            load: function () {
+                var code = getQueryInt("code");
+                switch (code) {
+                    case 2:
+                        vmLogin.info = "您没有权限访问这个界面，请联系管理员";
+                        break;
+                }
+            }
+        }
+    });
+
+    vmLogin.load();
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>我的信息</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="f-main clearfix">
+    <div class="setting-left" id="leftNav">
+        <script>
+            $(function () {
+                $("#leftNav").load("nav.html", null, function () {
+                    vmUserNav.index = 3;
+                });
+            });
+        </script>
+    </div>
+
+
+    <div class="setting-right" id="userInfo">
+        <div class="course-menu" style="padding: 25px 0px;">
+            <a href="javascript:void(0);" @click="curInfo=true"><span
+                    :class="{'menu-item':true, 'cur': curInfo}" style="font-size: 16px !important;">我的信息</span></a>
+            <a href="javascript:void(0);" @click="curInfo=false"><span
+                    :class="{'menu-item':true, 'cur': !curInfo}" style="font-size: 16px !important;">修改密码</span></a>
+        </div>
+
+        <div class="split-line" style="margin: 20px 0px;"></div>
+
+        <div class="oc-form" v-show="curInfo">
+            <div>
+                <input type="file" id="imageInput" name="pictureImg" style="display: none;"
+                       @change="uploadImage">
+
+                <img :src="user.headImageUrl" alt="不好意思，您的图片丢失了或您上传的不是图片！！！" style="height:96px;">
+
+                <img id="user_header" src="" style="display: none;height:96px;">
+
+                <div style="margin:15px 0px;" class="clearfix">
+                    <a href="javascript:void(0);" onclick="$('#imageInput').click()" style="float:left;"
+                       class="btn">更换头像</a>
+                    <span id="imgErrSpan"
+                          style="color:red;font-weight:normal;float:left;margin-left:10px;margin-top:5px;"></span>
+                </div>
+            </div>
+
+            <li>
+                <label>用户名</label>
+                <span>{{user.username}}（用户名不可更改）</span>
+            </li>
+            <li>
+                <label>昵称</label>
+                <input type="text" v-model="user.nickname" class="input-text2"/>
+            </li>
+            <li>
+                <label>性别</label>
+                <select class="input-select" name="gender" v-model="user.sex">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </li>
+            <li>
+                <label>年龄</label>
+                <input v-model="user.age" type="text" class="input-text2">
+            </li>
+            <li><label>qq</label>
+                <input name="qq" v-model="user.qq" type="text" class="input-text2">
+            </li>
+            <li><label>个性签名</label>
+                <textarea name="sign" v-model="user.description" rows="2" type="text" class="input-text2"
+                          style="height:auto;border:1px solid #d9dde1; line-height:25px;"></textarea>
+            </li>
+
+            <li class="clearfix" style="margin-top: 50px;padding-left: 170px;">
+                <button class="btn" @click="modify">保存</button>
+            </li>
+
+            <li>
+                <div id="myAlert" class="alert alert-success" style="display: none;">
+                    <span id="myAlert_msg" class="color-oc f-16">保存成功！</span>
+                </div>
+            </li>
+        </div>
+
+
+        <div class="oc-form" v-show="!curInfo">
+            <li class="clearfix" style="margin-top: 0px;padding-left: 170px;display:inline-block"
+                v-show="password.out.code!=1">
+                <span class="text-danger f-16">{{password.out.status}}</span>
+            </li>
+            <li v-show="false">
+                <label>旧密码</label>
+                <input type="password" class="input-text" placeholder="请输入旧密码" autocomplete="off"/> <!--防止密码框多处一个点的bug -->
+            </li>
+            <li>
+                <label>旧密码</label>
+                <input type="password" class="input-text" placeholder="请输入旧密码" autocomplete="off" v-model="password.oldPassword"/>
+            </li>
+            <li>
+                <label>新密码</label>
+                <input name="password" type="password" class="input-text" placeholder="请输入新密码" autocomplete="off" v-model="password.newPassword"/>
+            </li>
+            <li>
+                <label>确认密码</label>
+                <input type="password" class="input-text" placeholder="请输入确认密码" autocomplete="off" v-model="password.newPassword2"/>
+            </li>
+            <li class="clearfix" style="padding-left: 170px;">
+                <div class="btn" @click="modifyPassword">保存</div>
+            </li>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.user-menu-nav').hover(function () {
+            $(this).find('span').css('color', '#0089D2');
+        }, function () {
+            $(this).find('span').css('color', '#777');
+        });
+
+        var headPhoto = $('#userNavHeader').attr('src');
+        if (headPhoto == null || headPhoto == '' || headPhoto == 'null') {
+            var headPhoto = "${s.base}/res/i/header.jpg";
+            $('#userNavHeader').attr('src', headPhoto);
+        }
+    });
+
+
+    var vmUserInfo = new Vue({
+        el: "#userInfo",
+        data: {
+            user: {
+                headImageUrl: ""
+            },
+            password: {
+                oldPassword: "",
+                newPassword: "",
+                newPassword2: "",
+                out: {
+                    code: 1,
+                    status: "两次的密码不一样"
+                }
+            },
+            curInfo: true
+        },
+        methods: {
+            load: function () {
+                $.ajax({
+                    url: "../user/user.action",
+                    success: function (data) {
+                        vmUserInfo.user = data;
+                    }
+                });
+            },
+            jumpToCoursePage(courseId) {
+                window.location.href = "../course/info.html?courseId=" + courseId;
+            },
+            jumpToContentPage(courseId, contentId) {
+                window.location.href = "../course/content.html?courseId=" + courseId + "&contentId=" + contentId;
+            },
+            uploadImage: function () {
+                var formFile = new FormData();
+                formFile.append("upfile", document.getElementById("imageInput").files[0]);
+                $.ajax({
+                    type: "post",
+                    url: "../upload/upload.action",
+                    data: formFile,
+                    cache: false, // 文件不需要缓存
+                    processData: false, // processData 指对参数进行序列化处理 ，一定是false！！
+                    contentType: false, // 一定是false
+                    success: function (data) {
+                        vmUserInfo.user.headImageUrl = data.url;
+                    }
+                });
+            },
+            modify: function () {
+                $.ajax({
+                    type: "post",
+                    url: "../user/modifyInfo.action",
+                    data: vmUserInfo.user,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            alert("修改成功，请您重新登陆。");
+                            window.location.reload();
+                            //  window.location.reload();
+                        } else {
+                            alert(data.status);
+                        }
+                    }
+                });
+            },
+            modifyPassword: function () {
+                if (vmUserInfo.password.newPassword != vmUserInfo.password.newPassword2) {
+                    vmUserInfo.password.out.code = 0;
+                    vmUserInfo.password.out.status = "两次新密码输入不一样";
+                    return;
+                }
+                $.ajax({
+                    type: "post",
+                    url: "../user/modifyPassword.action",
+                    data: {
+                        oldPassword: vmUserInfo.password.oldPassword,
+                        newPassword: vmUserInfo.password.newPassword
+                    },
+                    success: function(data) {
+                        if (data.code ==   1) {
+                            alert("修改成功，请重新登录！");
+                            window.location.reload();
+                        } else {
+                                vmUserInfo.password.out = data;
+                            }
+                    }
+                });
+            }
+        }
+    });
+
+    vmUserInfo.load();
+</script>
+</body>
+
+</html>

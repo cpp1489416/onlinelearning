@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>自己的课程</title>
+    <script src="../../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet" />
+    <script src="../../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../commons/vue.js/vue.min.js"></script>
+    <script src="../../js/main.js"></script>
+</head>
+
+<body>
+    <div id="header" style="min-height:51px; margin-bottom:20px;"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <div>
+                    <a href="javascript:void(0);" class="list-group-item active" onclick="loadMyInfo()">个人信息</a>
+                    <a href="javascript:void(0);" class="list-group-item" onclick="loadLearnCourses()">所学课程</a>
+                    <a href="javascript:void(0);" class="list-group-item" onclick="loadMyCourses()">我的课程</a>
+                </div>
+
+            </div>
+            <div class="col-sm-10">
+                <div id="mainDiv"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadMyInfo() {
+            $("#mainDiv").load("myinfo.html");
+        }
+
+        function loadLearnCourses() {
+            $("#mainDiv").load("learncourses.html");
+        }
+
+        function loadMyCourses() {
+            $("#mainDiv").load("mycourses.html");
+        }
+
+        $(function() {
+            $(".list-group-item").on("click", function() {
+                $(".list-group-item").removeClass("active");
+                $(this).addClass("active");
+            })
+
+            loadMyInfo();
+        })
+    </script>
+</body>
+
+</html>

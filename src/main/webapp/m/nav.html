@@ -1,0 +1,52 @@
+<div class="sidebar-nav" id="leftHeaderNav">
+    <a href="#dashboard-menu" class="nav-header" data-toggle="collapse">
+        <span style="font-weight: bold;font-size: 16px;">工作区</span>
+    </a>
+    <ul id="dashboard-menu" class="nav nav-list collapse in">
+        <li :class="{'active': index == 0}">
+            <a href="/onlinelearning/m/index.html">主 页</a>
+        </li>
+        <li :class="{'active': index == 1} ">
+            <a href="/onlinelearning/m/course/index.html">我的课程</a>
+        </li>
+        <li v-show="user.role==2" :class="{'active': index == 2}">
+            <a href="/onlinelearning/m/user/index.html">用户管理</a>
+        </li>
+        <li v-show="user.role==2" :class="{'active': index == 3}">
+            <a href="/onlinelearning/m/course/all.html">所有课程</a>
+        </li>
+        <li v-show="user.role==2" :class="{'active': index == 4}">
+            <a href="/onlinelearning/m/category/category.html">分类管理</a>
+        </li>
+    </ul>
+
+</div>
+
+<script>
+    var vmMNav = new Vue({
+        el: "#leftHeaderNav",
+        data: {
+            index: 0,
+            user: {}
+        },
+        methods: {
+            load: function () {
+                $.ajax({
+                    url: "/onlinelearning/user/user.action",
+                    success: function (data) {
+                        vmMNav.user = data;
+                        if (data == null || data == "") {
+                            window.location.href = "/onlinelearning/user/login.html";
+                        }
+                        if (data.role == 0) {
+                            window.location.href = "/onlinelearning/user/login.html?code=2";
+                        }
+                    }
+                })
+            }
+        }
+    });
+
+    vmMNav.load();
+</script>
+

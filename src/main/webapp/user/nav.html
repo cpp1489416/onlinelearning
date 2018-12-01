@@ -1,0 +1,80 @@
+<div id="userLeftNav">
+    <img id="userNavHeader" class="setting-header" :src="user.headImageUrl"></img>
+    <div>{{user.nickname}}</div>
+    <div class="split-line" style="margin-bottom: 20px;"></div>
+
+    <ul class="user-menu-nav-block">
+        <a href="javascript:void(0);">
+            <li :class="{'user-menu-nav':index!=0,'user-menu-nav-cur':index==0}" @click="jumpToPage(0)">主页 <span>&gt;</span></li>
+        </a>
+        <a href="javascript:void(0);">
+            <li :class="{'user-menu-nav':index!=1,'user-menu-nav-cur':index==1}" @click="jumpToPage(1)">最近学习 <span>&gt;</span></li>
+        </a>
+        <a href="javascript:void(0);">
+            <li :class="{'user-menu-nav':index!=2,'user-menu-nav-cur':index==2}" @click="jumpToPage(2)">我的收藏 <span>&gt;</span></li>
+        </a>
+        <a href="javascript:void(0);">
+            <li :class="{'user-menu-nav':index!=3,'user-menu-nav-cur':index==3}"  @click="jumpToPage(3)">个人信息 <span>&gt;</span></li>
+        </a>
+        <a href="javascript:void(0);">
+            <li :class="{'user-menu-nav':index!=4,'user-menu-nav-cur':index==4}"  @click="jumpToPage(4)">我的关注 <span>&gt;</span></li>
+        </a>
+
+    </ul>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.user-menu-nav').hover(function () {
+            $(this).find('span').css('color', '#0089D2');
+        }, function () {
+            $(this).find('span').css('color', '#777');
+        });
+
+        var headPhoto = $('#userNavHeader').attr('src');
+        if (headPhoto == null || headPhoto == '' || headPhoto == 'null') {
+
+        }
+    });
+
+    var vmUserNav = new Vue({
+        el: '#userLeftNav',
+        data: {
+            index: getQueryInt('index'),
+            user: {}
+        },
+        methods: {
+            load: function() {
+                $.ajax({
+                    url: "../user/user.action",
+                    success: function(data) {
+                        vmUserNav.user = data;
+                        if (data == null || data == "") {
+                            window.location.href="login.html";
+                        }
+                    }
+                });
+            },
+            jumpToPage(index) {
+                switch (index) {
+                    case 0:
+                        window.location.href="user.html";
+                        break;
+                    case 1:
+                        window.location.href="content.html";
+                        break;
+                    case 2:
+                        window.location.href="collection.html";
+                        break;
+                    case 3:
+                        window.location.href="info.html";
+                        break;
+                    case 4:
+                        window.location.href="followings.html"
+                        break;
+                }
+            }
+        }
+    });
+
+    vmUserNav.load();
+</script>

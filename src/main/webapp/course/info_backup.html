@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="main-body" id="learn">
+
+    <div class="course-info-left">
+        <div class="course-info-info">
+            <div class="course-info-title">{{info.course.name}}</div>
+
+            <div class="course-meta">
+                <a href="javascript:void(0);" class="learn-btn" @click="continueLearn">
+                    {{loggedIn? (vmLearn.info.currentCourseContent.id == -1? "开始学习" : "继续学习") : "请先登录"}}
+                </a>
+
+                <div class="static-item">
+                    <div class="meta">上次学到</div>
+                    <div class="meta-value">{{info.currentCourseContent.name}}</div>
+                </div>
+                <div class="static-item">
+                    <div class="meta">学习人数</div>
+                    <div class="meta-value">1452</div>
+                </div>
+                <div class="static-item">
+                    <div class="meta">难度级别</div>
+                    <div class="meta-value">中级</div>
+                </div>
+                <a @click="swapCollection" href="javascript:void(0)"
+                   :class="{'following':!isCollected,'followed':isCollected}" style="float: right;margin-top:5px;"
+                   title="收藏"></a>
+            </div>
+            <div class="course-brief">
+                课程简介：{{info.course.description}}
+            </div>
+
+
+            <div class="course-menu">
+                <a href="javascript:void(0);" @click="curContent=true"><span
+                        :class="{'menu-item':true, 'cur': curContent}">章节</span></a>
+                <a href="javascript:void(0);" @click="curContent=false"><span
+                        :class="{'menu-item':true, 'cur': !curContent}">评论</span></a>
+            </div>
+
+        </div>
+
+        <div>
+            <div class="chapter" v-for="fcontent in info.contents" v-show="curContent">
+                <a href="javascript:void(0);" class="js-open">
+                    <h3>
+                        <strong>
+                            <div class="icon-chapter">=</div>
+                            {{fcontent.name}}
+                        </strong>
+                        <span class="drop-down">▼</span>
+                    </h3>
+                </a>
+                <ul class="chapter-sub">
+                    <a href="javascript:void(0);" v-for="ccontent in fcontent.contents">
+                        <li class="chapter-sub-li" @click="jumpToContentPage(ccontent.id)">
+                            <i class="icon-video">▶</i>
+                            {{ccontent.name}}
+                            <div class="preview-btn" v-show="info.currentCourseContent.id==ccontent.id">
+                                继续学习
+                            </div>
+                        </li>
+                    </a>
+                </ul>
+            </div>
+
+            <div class="comment clearfix" v-for="comment in info.comments" v-show="!curContent">
+                <div class="comment-header"><img class="lecturer-uimg" :src="comment.headImageUrl"></div>
+                <div class="comment-main">
+                    <div class="user-name"> {{comment.nickname}} 的评论：</div>
+                    <div style="margin-top:5px;padding: 5px;border:1px solid #ccc;background-color:#eee;">
+                        {{comment.text}}
+                    </div>
+
+                    <div class="comment-footer">
+                        <span>时间：{{comment.updateTime}} </span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;" v-show="!curContent && loggedIn">
+                <div>
+                    <span id="commentTitle">发布评论：</span>
+                </div>
+                <form id="commentForm" onsubmit="return false" style="margin: 5px 0px;">
+                    <textarea id="content" name="content" rows="" cols="100" v-model="commentText"></textarea>
+                </form>
+                <input type="button" value="发布" class="btn" @click="comment">
+            </div>
+        </div>
+    </div>
+
+    <div class="main-course-right">
+            <img :src="info.course.imageUrl"  class="img-thumbnail" style="width:100%; height: 200px;">
+        <br/>
+        <br/>
+        <div class="lecturer-item" style="width: 100%;">
+            <img class="lecturer-uimg" :src="info.author.headImageUrl">
+            <span class="lecturer-name">{{info.author.nickname}}</span>
+            <span class="lecturer-title">课程教师</span>
+            <span class="lecturer-p">{{info.author.description}}</span>
+            <a href="javascript:void(0)" @click="swapFollow"><span :class="{'follow-btn': !isFollowed, 'unfollow-btn': isFollowed}">{{!isFollowed?"关注+":"取消关注-"}}</span></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    var vmLearn = new Vue({
+        el: "#learn",
+        data: {
+            courseId: -1,
+            info: {
+                author: {},
+                course: {},
+                contents: [],
+                comments: [],
+                currentCourseContent: {}
+            },
+            isCollected: false,
+            curContent: true,
+            commentText: "",
+            isFollowed: false,
+            loggedIn: false
+        },
+        methods: {
+            load: function () {
+                vmLearn.courseId = getQueryString("courseId");
+                $.ajax({
+                    url: "course.action",
+                    data: {courseId: vmLearn.courseId},
+                    success: function (data) {
+                        vmLearn.info = data;
+                        $(function () {
+                            $('.chapter li').hover(function () {
+                                $(this).find('.icon-video').css('color', '#FFF');
+                            }, function () {
+                                $(this).find('.icon-video').css('color', '#777');
+                            });
+
+                            $('.js-open').click(function () {
+                                var display = $(this).parent().find('ul').css('display');
+                                if (display == 'none') {
+                                    $(this).parent().find('ul').css('display', 'block');
+                                    $(this).find('.drop-down').html('▼');
+                                } else {
+                                    $(this).parent().find('ul').css('display', 'none');
+                                    $(this).find('.drop-down').html('▲');
+                                }
+                            });
+                        });
+
+
+                        $.ajax({
+                            url: "../collection/isCollected.action",
+                            data: {courseId: vmLearn.courseId},
+                            success: function (data) {
+                                vmLearn.isCollected = data.code == 1;
+                            }
+                        });
+
+                        $.ajax({
+                            url: "../follow/isFollowed.action",
+                            data: {followUserId: vmLearn.info.author.id},
+                            success: function (data) {
+                                vmLearn.isFollowed = data.code == 1;
+                            }
+                        });
+                    }
+                });
+
+                $.ajax({
+                    url: "../user/user.action",
+                    success: function(data) {
+                        if (data == null) {
+                            vmLearn.loggedIn = false;
+                        } else {
+                            vmLearn.loggedIn = true;
+                        }
+                    }
+                });
+
+            },
+            swapCollection: function () {
+                $.ajax({
+                    url: "../collection/swapCollection.action",
+                    data: {courseId: vmLearn.courseId},
+                    success: function (data) {
+                        vmLearn.isCollected = data.code == 1;
+                    }
+                });
+            },
+            swapFollow: function() {
+                $.ajax({
+                    url: "../follow/swapFollow.action",
+                    data: {followUserId: vmLearn.info.author.id},
+                    success: function (data) {
+                        vmLearn.isFollowed = data.code == 1;
+                    }
+                });
+            },
+            comment: function() {
+                $.ajax({
+                    type: "post",
+                    url: "../comment/comment.action",
+                    data: {courseId: vmLearn.courseId, text: vmLearn.commentText},
+                    success: function() {
+                        $.ajax({
+                            url: "../comment/comments.action",
+                            data: {courseId: vmLearn.courseId},
+                            success: function(data) {
+                                vmLearn.info.comments = data;
+                            }
+                        });
+                    }
+                });
+            },
+            jumpToContentPage: function(contentId) {
+                window.location.href="content.html?contentId=" + contentId + "&courseId=" + vmLearn.courseId;
+            },
+            continueLearn: function() {
+                if (!vmLearn.loggedIn) {
+                    vmLearn.showLoginModal();
+                    return;
+                }
+                if (vmLearn.info.currentCourseContent.id == -1) {
+                    vmLearn.jumpToContentPage(vmLearn.info.contents[0][0].id);
+                    return;
+                }
+                vmLearn.jumpToContentPage(vmLearn.info.currentCourseContent.id);
+            }
+        }
+    });
+
+    vmLearn.load();
+
+</script>
+</body>
+
+</html>

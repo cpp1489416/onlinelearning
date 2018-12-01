@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="f-main clearfix">
+    <div class="setting-left" id="leftNav">
+        <script>
+            $(function () {
+                $("#leftNav").load("nav.html", null, function () {
+                    vmUserNav.index = 2;
+                });
+            });
+        </script>
+    </div>
+    <div class="setting-right" id="collection">
+        <div><span class="f-16">我的收藏</span></div>
+        <div class="split-line" style="margin: 20px 0px;"></div>
+
+        <div class="comment clearfix" v-for="collection in collections">
+            <div class="comment-main" style="width: 100%">
+                <a href="javascript:void(0);" @click="jumpToCoursePage(collection.courseId)" class="user-name link-a" style="font-size:20px;">
+                    {{collection.name}}
+                </a>
+                <div class="comment-content">
+                    <span class="learn-rate"> 分类：课程 </span>
+                    <span>收藏时间：{{collection.updateTime}} </span>
+                </div>
+            </div>
+        </div>
+        <div class="page-box">
+            <div class="page clearfix">
+                <div style="float:left;">
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(1)">首 页</a>
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(page.pageIndex - 1)">上一页</a>
+
+                    <a href="javascript:void(0);"
+                       :class="{'page-cur':dot == page.pageIndex, 'page-num': true}" v-for="dot in page .dots"
+                       @click="loadPage(dot)">{{dot}}</a>
+
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(page.pageIndex + 1)">下一页</a>
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(page.pageTotalCount)">
+                        尾 页
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.user-menu-nav').hover(function () {
+            $(this).find('span').css('color', '#0089D2');
+        }, function () {
+            $(this).find('span').css('color', '#777');
+        });
+
+        var headPhoto = $('#userNavHeader').attr('src');
+        if (headPhoto == null || headPhoto == '' || headPhoto == 'null') {
+            var headPhoto = "${s.base}/res/i/header.jpg";
+            $('#userNavHeader').attr('src', headPhoto);
+        }
+    });
+
+    var vmCollection = new Vue({
+        el: "#collection",
+        data: {
+            collections: [],
+            page: {
+                pageSize: 4,
+                pageIndex: 1,
+                pageTotalCount: 2
+            }
+        },
+        methods: {
+            load: function () {
+                $.ajax({
+                    url: "../collection/collections.action",
+                    success: function (data) {
+                        vmCollection.collections = data;
+                    }
+                });
+                vmCollection.loadPage(1);
+            },
+            jumpToCoursePage: function(courseId) {
+                window.location.href="../course/info.html?courseId=" + courseId;
+            },
+            loadPage: function(index) {
+                if (index < 1 || index > vmCollection.page.pageTotalCount) {
+                    return;
+                }
+                vmCollection.page.pageIndex = index;
+                $.ajax({
+                    type: "post",
+                    url: "../collection/collectionsPage.action",
+                    dataType: "json",
+                    contentType: "application/json; charset=uft-8",
+                    data: JSON.stringify(
+                        {page: vmCollection.page}
+                    ),
+                    success: function (data) {
+                        vmCollection.page = data;
+                        vmCollection.collections = data.items;
+                    }
+                });
+            }
+        }
+    });
+
+    vmCollection.load();
+</script>
+</body>
+
+</html>

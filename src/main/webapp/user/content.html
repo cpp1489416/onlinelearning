@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="f-main clearfix">
+    <div class="setting-left" id="leftNav">
+        <script>
+            $(function () {
+                $("#leftNav").load("nav.html", null, function () {
+                    vmUserNav.index = 1;
+                });
+            });
+        </script>
+    </div>
+
+    <div class="setting-right" id="course">
+        <div><span class="f-16">最近学习</span></div>
+        <div class="split-line" style="margin: 20px 0px;"></div>
+
+        <div class="comment clearfix"  v-for="content in contents">
+            <div class="comment-main" style="width: 100%">
+                <a href="javascript:void(0);"  class="user-name link-a" style="font-size:20px;" @click="jumpToCoursePage(content.courseId)">{{content.courseName}}</a>
+                <div class="comment-content">
+                    <span>
+                        <a href="javascript:void(0);" @click="jumpToContentPage(content.courseId, content.contentId)"> {{content.contentName}}</a>
+                    </span>
+                </div>
+                <div class="comment-footer">
+                        <span>时间：{{content.updateTime}}</span>
+                    <a href="javascript:void(0);"  @click="jumpToContentPage(content.courseId, content.contentId)">
+                        <span class="continue-btn" style="margin-left: 50px;">继续学习</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="page-box">
+            <div class="page clearfix">
+                <div style="float:left;">
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(1)">首 页</a>
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(page.pageIndex - 1)">上一页</a>
+
+                    <a href="javascript:void(0);"
+                       :class="{'page-cur':dot == page.pageIndex, 'page-num': true}" v-for="dot in page.dots"
+                       @click="loadPage(dot)">{{dot}}</a>
+
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(page.pageIndex + 1)">下一页</a>
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(page.pageTotalCount)">
+                        尾 页
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('.user-menu-nav').hover(function () {
+            $(this).find('span').css('color', '#0089D2');
+        }, function () {
+            $(this).find('span').css('color', '#777');
+        });
+
+        var headPhoto = $('#userNavHeader').attr('src');
+        if (headPhoto == null || headPhoto == '' || headPhoto == 'null') {
+            var headPhoto = "${s.base}/res/i/header.jpg";
+            $('#userNavHeader').attr('src', headPhoto);
+        }
+    });
+
+    var vmCourseContent = new Vue({
+        el: "#course",
+        data: {
+            contents: [],
+            page: {
+                pageIndex:1,
+                pageSize: 3
+            }
+        },
+        methods: {
+            load: function () {
+                vmCourseContent.loadPage(1);
+            },
+            jumpToContentPage: function (courseId, contentId) {
+                window.location.href = "../course/content.html?courseId=" + courseId + "&contentId=" + contentId;
+            },
+            jumpToCoursePage: function (courseId, contentId) {
+                window.location.href = "../course/info.html?courseId=" + courseId;
+            },
+            loadPage: function(index) {
+                vmCourseContent.page.pageIndex = index;
+                $.ajax({
+                    type: "post",
+                    url: "../user/contentsPage.action",
+                    dataType: "json",
+                    contentType: "application/json; charset=uft-8",
+                    data: JSON.stringify(
+                        {page: vmCourseContent.page}
+                    ),
+                    success: function (data) {
+                        vmCourseContent.page = data;
+                        vmCourseContent.contents = data.items;
+                    }
+                });
+            }
+        }
+    });
+
+    vmCourseContent.load();
+</script>
+</body>
+
+</html>

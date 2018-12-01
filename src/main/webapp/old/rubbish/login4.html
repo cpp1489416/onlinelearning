@@ -1,0 +1,69 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>登陆</title>
+    <link href="css/main.css" rel="stylesheet" type="text/css"/>
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/main.js"></script>  
+</head>
+
+<body>
+    <div class="centerbox width-300px">
+        <form id="form" class="form" method="post" action="login.action" onsubmit="return login()">
+            <h1>登陆 <span class="horizontal-spce"></span><span id="messageSpan" class="error-tip align-bottom"></span></h1>
+            <hr/>
+            <div class="form-space-big"></div>
+            <input type="text" class="textbox fullwidth" id="usernameText" name="username" placeholder="请输入用户名" required>
+            <div class="vertical-space fullwidth"> </div>
+
+            <input type="password" class="textbox fullwidth" id="passwordText" name="password" placeholder="请输入密码" required>
+            <div class="vertical-space fullwidth"></div>    
+            <input type="text" class="textbox" id="verifyCodeText" name="verifyCode" placeholder="请输入验证码">
+            <span class="vertical-space"></span>
+            <img id="verifyImage" src="verifyimage.action" alt="验证码 "/>
+            <span class="vertical-space"></span>
+            <a href="#" onclick="changeVerifyCode()">换一张</a>
+            <div class="vertical-space fullwidth"> </div>
+            <div class="vertical-space fullwidth"> </div>
+            <input type="submit" class="button" value="登陆"/>
+
+             <a href="regist.html" class="right-control">注册</a>
+        </form>
+        
+        <a href="userinfo.action">获得用户信息</a>
+    </div>
+
+    <script>
+        changeVerifyCode();
+    
+        function login() {
+            $.ajax({
+                url: "login.action",
+                type: "POST",
+                data: $("#form").serialize(),
+                success: function(data) {
+                    $("#messageSpan").html( data.status);
+                    if (data.status == "success") {
+                        window.location.href="manage";
+                    }
+                },
+                error: function() {
+                    alert("无法链接到服务器");
+                }
+            })
+            return false;
+        }
+        
+        function changeVerifyCode() {
+            $.ajax({
+                url: "changeverifycode.action",
+                success: function() {
+                    $("#verifyImage").attr("src");
+                    $("#verifyImage").attr("src", "verifyimage.action?rand=" + Math.random());
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

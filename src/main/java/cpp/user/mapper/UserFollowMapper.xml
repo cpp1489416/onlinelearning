@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.user.mapper.UserFollowMapper">
+    <insert id="add" parameterType="cpp.user.po.UserFollow">
+        insert into user_follow (userId, followUserId) values (#{userId}, #{followUserId})
+    </insert>
+
+    <delete id="removeByUserIdAndFollowUserId" parameterType="cpp.user.po.UserFollow">
+        delete from user_follow
+        where userId = #{userId} and followUserId = #{followUserId}
+    </delete>
+
+    <select id="getByUserIdAndFollowUserId" parameterType="cpp.user.po.UserFollow" resultType="cpp.user.po.UserFollow">
+        select *
+        from user_follow
+        where userId = #{userId} and followUserId = #{followUserId}
+    </select>
+
+    <select id="listUserFollowStudyRecord" parameterType="int" resultType="cpp.user.po.UserFollowStudyRecord">
+        select
+            user.id                        userId,
+            user.nickname                  nickname,
+            user.headImageUrl              headImageUrl,
+            user_course_content.updateTime updateTime,
+            course.id                      courseId,
+            course.name                    courseName,
+            course_content.id              contentId,
+            course_content.name            contentName
+        from user_follow
+            inner join user on user_follow.followUserId = user.id
+            inner join user_course_content on user.id = user_course_content.userId
+            inner join course_content on course_content.id = user_course_content.contentId
+            inner join course on user_course_content.courseId = course.id
+        where user_follow.userId = #{userId}
+        order by user_course_content.updateTime desc
+    </select>
+
+    <select id="getUserFollowStudyRecordCount" parameterType="int" resultType="int">
+        select count(*)
+        from user_follow
+            inner join user on user_follow.followUserId = user.id
+            inner join user_course_content on user.id = user_course_content.userId
+            inner join course_content on course_content.id = user_course_content.contentId
+            inner join course on user_course_content.courseId = course.id
+        where user_follow.userId = #{userId}
+        order by user_course_content.updateTime desc
+    </select>
+
+
+    <select id="listUserFollowStudyRecordPage" resultType="cpp.user.po.UserFollowStudyRecord">
+        select
+            user.id                        userId,
+            user.nickname                  nickname,
+            user.headImageUrl              headImageUrl,
+            user_course_content.updateTime updateTime,
+            course.id                      courseId,
+            course.name                    courseName,
+            course_content.id              contentId,
+            course_content.name            contentName
+        from user_follow
+            inner join user on user_follow.followUserId = user.id
+            inner join user_course_content on user.id = user_course_content.userId
+            inner join course_content on course_content.id = user_course_content.contentId
+            inner join course on user_course_content.courseId = course.id
+        where user_follow.userId = #{entity.id}
+        order by user_course_content.updateTime desc
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <select id="listFollowings" parameterType="int" resultType="cpp.user.po.User">
+        select user.*
+        from user inner join user_follow on  user.id = user_follow.followUserId
+        where user_follow.userId = #{userId}
+    </select>
+
+</mapper>

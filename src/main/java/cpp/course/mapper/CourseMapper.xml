@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.course.mapper.CourseMapper">
+    <select id="listAllCourses" parameterType="int" resultType="cpp.course.po.Course">
+        select *
+        from course
+    </select>
+
+    <select id="listCourses" parameterType="cpp.course.po.Course" resultType="cpp.course.po.Course">
+        select *, user.nickname nickname from course inner join user on user.id = course.userId
+        <where>
+            <if test="categoryId != null and categoryId != 0">
+                and find_in_set(categoryId, get_categories_children_list(#{categoryId}))
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat("%", #{name}, "%")
+            </if>
+        </where>
+    </select>
+
+    <select id="getCourse" parameterType="int" resultType="cpp.course.po.Course">
+        select *
+        from course
+        where id = #{courseId}
+    </select>
+
+    <select id="listCoursesByUserIdAndName" resultType="cpp.course.po.Course">
+        select * from course
+        <where>
+            userId = #{userId}
+            <if test="name != null and course.name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="addCourse" parameterType="cpp.course.po.Course">
+        <selectKey order="AFTER" resultType="int" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into course (name, userId, level, description, imageUrl, categoryId)
+        values (#{name}, #{userId}, #{level}, #{description}, #{imageUrl}, #{categoryId})
+    </insert>
+
+    <select id="getCoursesByUserIdAndNameCount" parameterType="cpp.course.po.Course" resultType="java.lang.Integer">
+        select count(*) from course
+        <where>
+            userId = #{userId}
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="listCoursesByUserIdAndNamePage" resultType="cpp.course.po.Course">
+        select * from course
+        <where>
+            userId = #{course.userId}
+            <if test="course.name != null and course.name != ''">
+                and name like concat('%', #{course.name}, '%')
+            </if>
+        </where>
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <select id="getCoursesByNameCount" parameterType="cpp.course.po.Course" resultType="java.lang.Integer">
+        select count(*) from course
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="listCoursesByNamePage" resultType="cpp.course.po.Course">
+        select *, user.nickname from course inner join user on course.userId = user.id
+        <where>
+            <if test="course.name != null and course.name != ''">
+                and name like concat('%', #{course.name}, '%')
+            </if>
+        </where>
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <update id="modifyCourse" parameterType="cpp.course.po.Course">
+        update course
+        set name = #{name}, level = #{level}, description = #{description},
+        imageUrl = #{imageUrl}, categoryId = #{categoryId}
+        where id = #{id}
+    </update>
+
+    <delete id="removeCourse" parameterType="int">
+        delete from course
+        where id = #{id}
+    </delete>
+
+    <select id="getCountPeopleByCourseId" parameterType="int" resultType="int">
+        select count(distinct userId) from user_course_content where courseId = #{courseId}
+    </select>
+
+    <update id="modifyCourseSecretCode" parameterType="cpp.course.po.Course">
+        update course set secretCode = #{secretCode} where id = #{id}
+    </update>
+
+    <select id="getCourseSecretCode" parameterType="int" resultType="string">
+        select secretCode from course where id = #{courseId}
+    </select>
+</mapper>

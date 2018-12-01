@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台管理</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../css/mstyle.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+</head>
+
+<body class="">
+<!-- top 导航 -->
+<div id="header">
+    <script>
+        $(function() {
+            $("#header").load("../commonpages/header.html");
+        })
+    </script>
+</div>
+<!-- 菜单导航 -->
+<div id="nav">
+    <script>
+        $(function() {
+            $("#nav").load("nav.html");
+        })
+    </script>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="row-fluid">
+                <div class="block span6">
+                    <a href="#tablewidget" class="block-heading" data-toggle="collapse">主页</a>
+                    <div id="report-1" style="width:100%;height:400px;">
+                        请选择操作
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

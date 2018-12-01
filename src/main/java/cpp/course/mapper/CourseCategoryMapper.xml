@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.course.mapper.CourseCategoryMapper">
+    <select id="listCategories" resultType="cpp.course.po.CourseCategory">
+       select * from course_category;
+   </select>
+
+    <select id="getById" parameterType="int" resultType="cpp.course.po.CourseCategory">
+        select * from course_category where id = #{id}
+    </select>
+
+    <select id="listChildren" parameterType="int" resultType="cpp.course.po.CourseCategory">
+        select * from course_category where parentId = #{id}
+    </select>
+
+    <select id="getSubCategoriesById" parameterType="int" resultType="cpp.course.po.CourseCategory">
+        select * from course_category where parentId = #{id} order by sort
+    </select>
+
+    <delete id="removeCategory" parameterType="int">
+        delete from course_category where id = #{id}
+    </delete>
+
+    <delete id="removeChildren" parameterType="int">
+        delete from course_category where parentId = #{id}
+    </delete>
+
+    <update id="updateCourseCategoryIdTo0" parameterType="int">
+        update course set categoryId = 0 where categoryId=#{categoryId}
+    </update>
+
+    <update id="modifyCategory" parameterType="cpp.course.po.CourseCategory">
+        update course_category
+        set
+        description = #{description},
+        name = #{name}
+        where id = #{id}
+    </update>
+
+    <insert id="addCategory" parameterType="cpp.course.po.CourseCategory">
+        insert into course_category(name, description, parentId)
+        values(#{name}, #{description}, #{parentId})
+    </insert>
+</mapper>

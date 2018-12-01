@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>在线学习系统</title>
+    <script src="commons/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <link href="commons/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="commons/popper.js/popper.min.js"></script>
+    <script src="commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="commons/vue.js/vue.min.js"></script>
+    <link href="commons/jquery-ui-1.12.1.custom/jquery-ui.min.css" rel="stylesheet"/>
+    <link href="css/reset.css" rel="stylesheet"/>
+    <script src="commons/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <style>
+        .image-vertical {
+            min-height: 100%;
+            max-height: 100%;
+            max-width: none !important;
+        }
+
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+
+        .clearfix {
+            overflow: hidden;
+        }
+
+        .main-line {
+            display: table;
+            width: 100%;
+        }
+
+        .float-left {
+            float: left;
+        }
+
+        .search-box {
+            margin: 15px 0px 12px;
+            height: 35px;
+            float: right;
+            overflow: visible;
+        }
+
+        .search-box input {
+            margin: 0px 10px;
+            height: 35px;
+            padding: 2px 10px;
+            border: none;
+            background-color: #f3f3f3;
+            width: 300px;
+        }
+
+        .sort-text {
+            line-height: 35px;
+            margin: 15px 0px 12px;
+            height: 35px;
+            width: 100px;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .sort-text.selected {
+            color: white;
+            font-weight: 500;
+            background-color: #cdcdcd;
+            border-radius: 100px;
+        }
+
+        .i-split {
+            line-height: 35px;
+            margin: 23px 10px 12px 30px;
+            height: 20px;
+            padding: 5px 0;
+            text-align: center;
+            display: inline-block;
+            width: 1px;
+            border: #d0d0d0 0.4px solid;
+            overflow: hidden;
+        }
+
+        .search-box button {
+            height: 35px;
+            border: 0;
+            background-color: blue;
+            color: white;
+            border-radius: 1px;
+            cursor: pointer;
+            margin-right: 0;
+        }
+
+        .big-category-box {
+            width: 1200px;
+            background-color: #f7f7f7;
+            padding: 0px 20px 5px 20px;
+            border-bottom: gray dotted 1px;
+            margin-top: 10px;
+        }
+
+        .big-category-box li {
+            display: inline-block;
+            margin: 15px 0px 0px 0px;
+            font-size: 15px;
+            width: 128px;
+            cursor: pointer;
+            color: black;
+            text-align: center;
+            height: 30px;
+            min-height: 30px;
+            max-height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+            padding-left: 10px;
+            padding-right: 10px;
+            vertical-align: top;
+        }
+
+        .small-category-box li {
+            display: inline-block;
+            margin: 10px 0px 0px 0px;
+            font-size: 15px;
+            width: 128px;
+            cursor: pointer;
+            color: black;
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+            padding-left: 10px;
+            padding-right: 10px;
+            vertical-align: top;
+        }
+
+        .big-category-box .checked, .small-category-box .checked {
+            color: white;
+            background-color: green;
+        }
+
+        .small-category-box {
+            width: 1200px;
+            background-color: #f7f7f7;
+            padding: 0px 20px 10px 20px;
+            margin-bottom: 10px;
+        }
+
+        .course-card {
+            border: 1px solid gray;
+            height: 200px;
+            width: 250px;
+            margin-left: 66px;
+            margin-bottom: 20px;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .course-card-title {
+            height: 40px;
+            line-height: 40px;
+            background-color: #646464;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+            border-bottom: 1px rgba(179, 255, 216, 0.82);
+        }
+
+        .course-card-image {
+            width: 100%;
+            height: 158px;
+            min-height: 158px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            padding: 1px;
+            cursor: pointer;
+        }
+
+        .main-body {
+            width: 1200px;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .i-page-box {
+            line-height: 35px;
+            margin: 15px 0px 12px;
+            height: 35px;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+            padding-left: 20px;
+        }
+
+        .i-page-box .dot {
+            border-radius: 1000px;
+            display: inline-block;;
+            width: 35px;
+            height: 35px;
+            font-size: 15px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .i-page-box .dot.selected {
+            border-radius: 1000px;
+            background-color: #bfbfbf;
+            display: inline-block;;
+            width: 35px;
+            height: 35px;
+            font-size: 15px;
+        }
+
+        .i-page-box .home {
+            width: 50px;
+            display: inline-block;
+            font-size: 15px;
+        }
+
+        .no-courses {
+            font-size: 30px;
+            color: #a7a7a7;
+        }
+
+    </style>
+
+    <script src="js/main.js"></script>
+</head>
+<body>
+<div id="header" style="min-height:51px; margin-bottom:20px;"></div>
+<div class="wrap">
+    <div id="index" class="main-body">
+
+        <div class="big-category-box">
+            <li v-for="category in categories" :class="{'checked': category.id == bigCategoryId}"
+                @click="loadBigCategory(category)">
+                {{category.name}}
+            </li>
+        </div>
+        <div class="small-category-box">
+            <li v-for="category in selectedBigCategory.categories" :class="{'checked': category.id == smallCategoryId}"
+                @click="loadSmallCategory(category)">
+                {{category.name}}
+            </li>
+        </div>
+        <div class="clearfix main-line">
+            <div :class="{'sort-text':true, 'float-left':true, 'selected':page.orderBy=='updateTime'}"
+                 @click="updateTimeClick">
+                最新
+            </div>
+            <div :class="{'sort-text':true, 'float-left':true, 'selected':page.orderBy=='name'}" @click="nameClick">
+                名称
+            </div>
+            <div class="i-split float-left">fdsaf dsa</div>
+            <div class="i-page-box">
+                <div class="home" @click="loadCoursesPage(1)" v-show="page.pageTotalCount != 0">
+                    首页
+                </div>
+                <div :class="{'dot':true, 'selected':dot==page.pageIndex}" v-for="dot in page.dots"
+                     @click="loadCoursesPage(dot)">
+                    {{dot}}
+                </div>
+                <div class="home" @click="loadCoursesPage(page.pageTotalCount)" v-show="page.pageTotalCount != 0">
+                    尾页
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="搜索感兴趣的课程" v-model="course.name">
+                <button @click="loadCoursesPage(1)">搜索</button>
+            </div>
+        </div>
+        <br/>
+        <div class="no-courses" v-show="courses.length == 0">{{unfind}}</div>
+        <div style="margin: 0 -66px;">
+            <div class="course-card" v-for="course in courses">
+                <div class="course-card-title ">{{course.name}}</div>
+                <img :src="course.imageUrl" alt="课程图片" class="course-card-image"
+                     @click="jumpToCourse(course.id)"/>
+            </div>
+        </div>
+        <br/>
+    </div>
+</div>
+<div id="footer">
+    <script>
+        $(function () {
+            $("#footer").load("/onlinelearning/commonpages/footer.html");
+        })
+    </script>
+</div>
+<script>
+
+    var vmIndex = new Vue({
+        el: "#index",
+        data: {
+            courses: [],
+            course: {
+                name: "",
+                categoryId: 0
+            },
+            page: {
+                pageIndex: 1,
+                orderBy: "updateTime",
+                pageSize:4
+            },
+            categories: [],
+            selectedBigCategory: {
+                categories: [
+                    {
+                        id: 0,
+                        name: "全部"
+                    }
+                ]
+            },
+            bigCategoryId: 0,
+            smallCategoryId: 0,
+            unfind: ""
+        },
+        methods: {
+            load: function () {
+                this.loadCoursesPage(1);
+                this.loadCategories();
+            },
+            loadCategories: function () {
+
+                var vmIndex = this;
+                $.ajax({
+                    type: "post",
+                    url: "category/categories.action",
+                    async: true,
+                    success: function (data) {
+                        vmIndex.categories = data;
+                    }
+                })
+            },
+            loadCoursesPage: function (index) {
+                var vmIndex = this;
+                if (index != 1 && (index < 1 || index > vmIndex.page.pageTotalCount)) {
+                    return;
+                }
+                vmIndex.page.pageIndex = index;
+                $.ajax({
+                    type: "post",
+                    url: "course/coursesPage.action",
+                    dataType: "json",
+                    contentType: "application/json; charset=uft-8",
+                    async: true,
+                    data: JSON.stringify(
+                        {course: vmIndex.course, page: vmIndex.page}
+                    ),
+                    success: function (data) {
+                        vmIndex.page = data;
+                        vmIndex.courses = data.items;
+                        vmIndex.unfind = "不好意思，没有您要找的课程"
+                    }
+                });
+            },
+            jumpToCourse: function (courseId) {
+                var vmIndex = this;
+                window.location.href = "course/info.html?courseId=" + courseId;
+            },
+            loadBigCategory: function (category) {
+                var vmIndex = this;
+                vmIndex.course.categoryId = category.id;
+                vmIndex.bigCategoryId = category.id;
+                vmIndex.selectedBigCategory = category;
+                vmIndex.smallCategoryId = category.categories[0].id;
+                vmIndex.course.name = "";
+                vmIndex.loadCoursesPage(1);
+            },
+            loadSmallCategory: function (category) {
+                var vmIndex = this;
+                vmIndex.course.categoryId = category.id;
+                vmIndex.smallCategoryId = category.id;
+                vmIndex.course.name = "";
+                vmIndex.loadCoursesPage(1);
+            },
+            updateTimeClick: function () {
+                var vmIndex = this;
+                vmIndex.page.orderBy = "updateTime";
+                vmIndex.loadCoursesPage(1);
+            },
+            nameClick: function () {
+                var vmIndex = this;
+                vmIndex.page.orderBy = "name";
+                vmIndex.loadCoursesPage(1);
+            }
+        },
+        created() {
+            this.load();
+        }
+    });
+</script>
+</body>
+</html>

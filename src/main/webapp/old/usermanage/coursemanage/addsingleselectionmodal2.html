@@ -1,0 +1,142 @@
+
+<div class="modal fade" id="addSingleSelectionModal" role="dialog" >
+  <script>
+  var addSingleSelectionOptionLineToken = `
+  <div class="form-group" optionIndex = "optionIndex1">
+
+    <label class="control-label col-sm-2">indexChar1</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" name="option1"/>
+    </div>
+    <div class=" radio col-sm-2">
+      <label><input type="radio" name="addSingleSelectionRightRadio"/>正确</label>
+    </div>
+    <div class="col-sm-2">
+      <button class="btn btn-default btn-block" onclick="removeAddSingleSelectionLine($(this))">删除</button>
+    </div>
+  </div>`;
+
+  function addAddSingleSelectionLine() {
+    var childs = $("#addSingleSelectionLineTokenDiv").children();
+    var optionIndex = childs.length + 1;
+    var curToken = addSingleSelectionOptionLineToken;
+    curToken = curToken.replace(/optionIndex1/g, optionIndex);
+    curToken = curToken.replace(/indexChar1/g, String.fromCharCode(optionIndex + 64));
+    $("#addSingleSelectionLineTokenDiv").append(curToken);
+  }
+
+  function removeAddSingleSelectionLine(button) {
+    var line = button.parent().parent();
+    console.log("删除行的optionIndex：" + line.attr("optionIndex"));
+    var nextLines = line.nextAll();
+    // 将后面的所有对象的 ABC，选项标题 向后加一位
+    for (var i  = 0; i < nextLines.length; ++i) {
+      var curLine = $(nextLines[i]);
+      var index = parseInt(curLine.attr("optionIndex"));
+      curLine.attr("optionIndex", index - 1);
+      var label = curLine.children("label");
+      label.html(String.fromCharCode(64 + index - 1));
+      console.log("delete line optionIndex" + index);
+    }
+    line.remove();
+  }
+
+  function submitAddSingleSelection() {
+    var singleSelectionBean = {
+      examContentId: examContentId,
+      question: $("#addSingleSelectionQuestionText").val(),
+      options: []
+    };
+    var childs = $("#addSingleSelectionLineTokenDiv").children();
+    for (var i = 0; i < childs.length; ++i) {
+      var curLine = $(childs[i]);
+      var text = $($(curLine.children()[1]).children()[0]).val();
+      singleSelectionBean.options[i] = {
+        body:text,
+        right: false,
+        index: i + 1
+      };
+    }
+    // console.log(singleSelectionBean);
+    var checkedRadio = $("[name='addSingleSelectionRightRadio']:checked");
+    var checkedIndex = parseInt(checkedRadio.parent().parent().parent().attr("optionIndex"));
+    console.log(checkedIndex);
+    singleSelectionBean.options[checkedIndex - 1].right = true;
+
+    console.log(singleSelectionBean);
+    $.ajax({
+      type: "post",
+      url: "addsingleselection.action",
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(singleSelectionBean),
+      success: function(data) {
+        console.log(data);
+        alert("成功添加单选题");
+        window.location.href="manage.html?courseId=" + courseId + "&examContentId=" + examContentId;
+      },
+      error: function() {
+
+      }
+    });
+  }
+
+  function hideAddSingleSelectionModal() {
+    $("#addSingleSelectionModal").modal("hide");
+  }
+
+  function showAddSingleSelectionModal() {
+    $("#addSingleSelectionQuestionText").val("");
+    $("#addSingleSelectionLineTokenDiv").html("");
+    addAddSingleSelectionLine();
+    $("[name='addSingleSelectionRightRadio']").attr("checked", "checked");
+    $("#addSingleSelectionModal").modal("show");
+  }
+  </script>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-labelledby="examSingleSelectModal" aria-hidden="true">
+          &times;
+        </button>
+        <h4 class="modal-title">添加单选题</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="addSingleSelectionForm" role="form" onsubmit="return false">
+          <div class="form-group">
+            <label class="control-label col-sm-2">问题内容</label>
+            <div class="col-sm-6  ">
+              <input type="text" class="form-control" name="question" id="addSingleSelectionQuestionText"/>
+            </div>
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary btn-sm btn-block" onclick="addAddSingleSelectionLine()">添加选项</button>
+            </div>
+          </div>
+          <div id="addSingleSelectionLineTokenDiv">
+            <div class="form-group" optionIndex="1">
+              <label class="control-label col-sm-2">A</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" name="option1"/>
+              </div>
+              <div class=" radio col-sm-2">
+                <label><input type="radio" name="rightRadio"/>正确</label>
+              </div>
+              <div class="col-sm-2">
+                <button class="btn btn-default btn-block" onclick="removeAddSingleSelectionLine($(this))">删除</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-4 col-sm-offset-2">
+            </div>
+            <div class="col-sm-4"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="hideAddSingleSelectionModal()">关闭</button>
+        <button type="button" class="btn btn-primary" onclick="submitAddSingleSelection()">添加</button>
+      </div>
+    </div>
+  </div>
+</div>

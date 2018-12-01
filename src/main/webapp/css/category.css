@@ -1,0 +1,221 @@
+ul li {
+    list-style: none;
+    line-height: 27px;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+.tree-node-content {
+    height: 27px;
+    cursor: pointer;
+    padding: 2px;
+    line-height: 23px;
+}
+
+.tree-node-right {
+    height: 23px;
+    display: inline-block;
+}
+
+.tree-node-text {
+    font-size: 16px;
+    line-height: 23px;
+    display: inline-block;
+    min-width: 50px;
+    vertical-align: top;
+}
+
+.img-folder {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    background: url("../img/folder.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.img-course {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    background: url("../img/course.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.img-content {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    background: url("../img/content.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.img-loading {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    background: url("../img/loading.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.img-plus {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    background: url("../img/plus.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.img-minus {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    background: url("../img/minus.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.img-blank {
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.tree-box {
+    height: calc(100vh - 290px);
+    min-height: 550px;
+    padding: 10px 10px 10px 0;
+    overflow-x: auto;
+    overflow-y: scroll;
+    background-color: rgba(203, 221, 235, 0.12);
+    float: left;
+    width: 500px;
+}
+
+.selected {
+    background-color: #d9d9d9;
+}
+
+.right-info {
+    margin-top: 30px;
+    overflow: visible;
+}
+
+.info-caption {
+    height: 50px;
+}
+
+.info-caption-img-course {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    background: url("../img/course.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.info-caption-img-folder {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    background: url("../img/folder.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.info-caption-img-content {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    background: url("../img/content.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.info-caption-img-loading {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    background: url("../img/loading.png") no-repeat 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+}
+
+.info-text {
+    height: 50px;
+    line-height: 50px;
+    width: 350px;
+    display: inline-block;
+    position: relative;
+    text-align: justify;
+    font-size: 30px;
+    margin-left: 20px;
+    vertical-align: top;
+}
+
+.info-category, .info-line {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 17px;
+}
+
+.info-description {
+    margin-top: 20px;
+    min-height: 100px;
+    max-height: 200px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #fdfdfd;
+    font-size: 16.5px;
+}
+
+hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-top: 1px #eee solid;
+}
+
+.i-button {
+    display: block;
+    margin-bottom: 10px;
+    height: 40px;
+    border: none;
+    background-color: #000097;
+    color: white;
+    width: 200px;
+    font-size: 16px;
+}
+
+.i-button.danger {
+    background-color: #910000;
+}
+
+.i-button:hover {
+    height: 40px;
+    border: none;
+    background-color: gray;
+    color: white;
+    width: 200px;
+}
+
+.i-button:active.danger {
+    background-color: #ce0000;
+}
+
+.i-button:active {
+    height: 40px;
+    border: none;
+    background-color: #0000d8;
+    color: white;
+    width: 200px;
+}
+
+

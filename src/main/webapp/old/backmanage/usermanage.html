@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<div class="card  border-primary" id="userManageDiv">
+    <div class="card-header">用户管理</div>
+    <div class="card-body">
+        <div class="form-inline">
+            <div class="form-group">
+                <label class="control-label">
+                    用户名&nbsp;
+                    <input type="text" class="form-control" v-model="username"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                </label>
+            </div>
+            <div class="form-group">
+                <label  class="control-label">
+                    用户昵称&nbsp;
+                    <input type="text" class="form-control" v-model="nickname"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                </label>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" @click="reload">查询</button>
+            </div>
+        </div>
+        <br/>
+        <table class="table table-bordered table-hover ">
+            <thead>
+            <tr>
+                <th>用户名称</th>
+                <th>用户昵称</th>
+                <th>用户性别</th>
+                <th>角色</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="courseTableBody">
+                <tr v-for="user in users">
+                    <td>{{user.username}}</td>
+                    <td>{{user.nickname}}</td>
+                    <td>{{user.sex}}</td>
+                    <td>
+                        <span v-for="userRole in user.userRoles">{{userRole.role.name}} &nbsp;</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @click="loadModal(user.username)">角色管理</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="userManageModal" title="设置用户角色" style="width:9000px;display:none;">
+        <h4>设置 {{modifyUsername}} 的角色 </h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered table-hover ">
+                    <thead>
+                    <tr>
+                        <th style="width:50px;"></th>
+                        <th>角色id</th>
+                        <th>角色名称</th>
+                        <th>角色说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="role in roles">
+                        <td><input type="checkbox" v-model="role.checked"/></td>
+                        <td>{{role.roleId}}</td>
+                        <td>{{role.name}}</td>
+                        <td>{{role.description}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    $.ajaxSetup ({       cache: false   });
+
+    var vmUserManage = new Vue({
+        el: "#userManageDiv",
+        data: {
+            username: "",
+            nickname: "",
+            modifyUsername: "",
+            users: [],
+            roles: []
+        },
+        methods: {
+            reload: function() {
+                $.ajax({
+                    url: "searchuser.action",
+                    type: "post",
+                    data: {
+                        username: this.username,
+                        nickname: this.nickname
+                    },
+                    success: function(data) {
+                        vmUserManage.users = data;
+                    }
+                });
+
+                $.ajax({
+                    url: "searchrole.action",
+                    type: "post",
+                    data: {
+                        name: this.name,
+                        description: this.description
+                    },
+                    success: function(data) {
+                        vmUserManage.roles = data;
+                    }
+                });
+            },
+            loadModal: function(username) {
+                if (vmUserManage.users == null) {
+                    return;
+                }
+                if (vmUserManage.roles == null) {
+                    return;
+                }
+                vmUserManage.modifyUsername = username;
+                $.ajax({
+                    url: "userroles.action",
+                    type: "post",
+                    data: {"username": username},
+                    success: function(data) {
+                        for (var i = 0; i < vmUserManage.roles.length; ++i) {
+                            var checked = false;
+                            for (var j = 0; j < data.length; ++j) {
+                                if (vmUserManage.roles[i].roleId == data[j].roleId) {
+                                   checked = true;
+                                }
+                            }
+                            vmUserManage.roles[i].checked = checked;
+                            Vue.set(vmUserManage.roles, i, vmUserManage.roles[i]);
+                            vmUserManage.reloadDialog();
+                            $("#userManageModal").dialog("open");
+                        }
+                    }
+                });
+            },
+            modifyUserRoles: function() {
+                var roles = [];
+                for (var i = 0; i < vmUserManage.roles.length; ++i) {
+                    if (vmUserManage.roles[i].checked) {
+                        roles.push({
+                            username: vmUserManage.modifyUsername,
+                            roleId: vmUserManage.roles[i].roleId
+                        });
+                    }
+                }
+                $.ajax({
+                    type: "post",
+                    url: "modifyuserroles.action",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        username: vmUserManage.modifyUsername,
+                        userRoles: roles
+                    }),
+                    success: function(data) {
+                        if (data.status != "success") {
+                            alert(data.status);
+                        }
+                        vmUserManage.reload();
+                        $("#userManageModal").dialog("close");
+                    }
+                });
+                console.log(roles);
+            },
+            reloadDialog: function() {
+                $("#userManageModal").dialog({
+                    autoOpen:false,
+                    modal: true,
+                    height: 500,
+                    width: 900,
+                    buttons: {
+                        更改: function() {
+                            vmUserManage.modifyUserRoles();
+                        },
+                        取消: function() {
+                            $(this).dialog("close");
+                            $(this).dialog("destroy");
+                        }
+                    },
+                    close: function() {
+                        $(this).dialog("close");
+                        $(this).dialog("destroy");
+                    }
+                });
+
+            }
+        }
+    });
+
+    vmUserManage.reload();
+
+</script>

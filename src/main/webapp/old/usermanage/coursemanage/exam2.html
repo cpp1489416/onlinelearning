@@ -1,0 +1,146 @@
+<div class="panel-group" id="accordion1">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion1" href="#collapse1">测验章节信息</a>
+      </h4>
+    </div>
+    <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">章节名称</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="examContentName" v-model="examContentName"/>
+              </div>
+              <div class="col-sm-2">
+                <button class="btn btn-primary btn-block">更改</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion1" href="#collapse2">第一部分：选择题</a>
+      </h4>
+    </div>
+    <div id="collapse2" class="panel-collapse collapse in">
+      <div class="panel-body">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default btn-sm" onclick="addSingleSelection()">添加单选题</button>
+          <button type="button" class="btn btn-default btn-sm" onclick="removeAllSingleSelects()">删除所有单选题</button>
+        </div>
+        <br/>
+        <br/>
+        <div id="singleSelectionsDiv"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="addSingleSelectionModalDiv"></div>
+
+<div id="modifySingleSelectionModalDiv"></div>
+
+<script>
+
+$("#addSingleSelectionModalDiv").load("addsingleselectionmodal.html");
+$("#modifySingleSelectionModalDiv").load("modifysingleselectionmodal.html");
+
+new Vue({
+  el: "#accordion1",
+  data: {
+    examContentName: contentName
+  }
+});
+
+$("#collapse1").collapse("show");
+$("#collapse2").collapse("show");
+
+var singleSelectionToken = `
+  <div id="singleSelectionTokenindexDiv">
+    <div class="panel panel-default" >
+      <div class="panel-body">
+        <p><strong>index：question</strong></p>
+        body1
+        <div class="btn-group">
+          <button class="btn btn-primary btn-sm" onclick="showModifySingleSelectionModal(singleSelectionId1)">编辑</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSingleSelection(singleSelectionId1)">删除</button>
+        </div>
+      </div>
+    </div>
+    <br/>
+  <div>
+`;
+
+var singleSelectionOptionToken = `
+<p>charIndex1:body</p>`;
+
+var rightSingleSelectionOptionToken = `
+<p class="text-success">charIndex1:body</p>`;
+
+
+$.ajax({
+  type:"post",
+  url: "../../singleselections.action",
+  data: {"examContentId": examContentId},
+  success: function(data) {
+    var str = "";
+    for (var i = 0; i < data.length; ++i) {
+      var singleSelection = data[i];
+      var stoken = singleSelectionToken;
+      stoken = stoken.replace(/index/g, singleSelection.index);
+      stoken = stoken.replace(/question/g, singleSelection.question);
+      stoken = stoken.replace(/singleSelectionId1/g, singleSelection.singleSelectionId);
+      var optionStr = "";
+      for (var j = 0; j < singleSelection.options.length; ++j) { // add selection options
+        var option = singleSelection.options[j];
+        var optionToken = option.right == true ? rightSingleSelectionOptionToken : singleSelectionOptionToken;
+        optionToken = optionToken.replace(/body/g, option.body);
+        optionToken = optionToken.replace(/charIndex1/g, String.fromCharCode(64 + option.index));
+        optionStr += optionToken;
+      }
+      stoken = stoken.replace(/body1/g, optionStr);
+      str += stoken;
+    }
+    $("#singleSelectionsDiv").html(str);
+  }
+})
+
+function deleteSingleSelection(singleSelectionId) {
+  if (!confirm("是否确认删除？")) {
+    return;
+  }
+  $.ajax({
+    type: "post",
+    url: "deletesingleselection.action",
+    data: {singleSelectionId: singleSelectionId},
+    success: function(data) {
+      if (data.status == "success") {
+        alert("删除成功");
+        window.location.href="manage.html?courseId=" + courseId + "&examContentId=" + examContentId;
+      } else {
+        alert(data.status);
+      }
+    },
+    error: function() {
+      alert("错误");
+    }
+  });
+}
+
+function addSingleSelection() {
+  showAddSingleSelectionModal();
+  return;
+}
+// $("#addExamSingleSelectModal").modal("show");
+
+function removeAllSingleSelects() {
+  alert('fdsaf');
+  $("[id*='singleSelectionToken']").remove();
+}
+
+</script>

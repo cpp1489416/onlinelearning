@@ -1,0 +1,118 @@
+
+<div class="modal fade" id="addSingleSelectionModal" role="dialog">
+  <div class="modal-dialog modal-lg"  style="width:900px !important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">添加单选题</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-labelledby="examSingleSelectModal" aria-hidden="true">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="addSingleSelectionForm" role="form" onsubmit="return false">
+          <div class="form-group row">
+            <label class="col-form-label col-sm-2">题目</label>
+            <div class="col-sm-6  ">
+              <input type="text" class="form-control" name="question" v-model="singleSelection.question"/>
+            </div>
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary btn-sm btn-block" @click="addAddSingleSelectionLine">添加选项</button>
+            </div>
+          </div>
+          <div class="form-group row" v-for="option in singleSelection.options" >
+            <label class="col-form-label col-sm-2">{{String.fromCharCode(65 + option.index)}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" v-model="option.body"/>
+            </div>
+            <div class=" radio col-sm-2">
+              <label class="col-form-label"><input type="radio" name="right" :checked="option.right" @change="changeRadio(option.index)"/>{{option.right==true?"正确":"错误"}}</label>
+            </div>
+            <div class="col-sm-2">
+              <button class="btn btn-default btn-block" @click="removeAddSingleSelectionLine(option.index)">删除</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-4 col-sm-offset-2">
+            </div>
+            <div class="col-sm-4"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" @click="hideAddSingleSelectionModal">关闭</button>
+        <button type="button" class="btn btn-primary" @click="submitAddSingleSelection">添加</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  var vmAddSingleSelection = new Vue({
+    el: "#addSingleSelectionModal",
+    data: {
+      singleSelection: {
+      }
+    },
+    methods: {
+      showAddSingleSelectionModal: function() {
+        vmAddSingleSelection.singleSelection = {
+          question: "",
+          examContentId: examContentId,
+          options: [
+            {
+              index: 0,
+              body: "",
+              right: true
+            }
+          ]
+        };
+        $("#addSingleSelectionModal").modal("show");
+      },
+      hideAddSingleSelectionModal: function() {
+        $("#addSingleSelectionModal").modal("hide");
+      },
+      submitAddSingleSelection: function() {
+        $.ajax({
+          type: "post",
+          url: "addsingleselection.action",
+          dataType: "json",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(this.singleSelection),
+          success: function(data) {
+            vmSingleSelections.loadSingleSelections();
+            vmAddSingleSelection.hideAddSingleSelectionModal();
+          },
+          error: function() {
+          }
+        });
+      },
+      addAddSingleSelectionLine: function() {
+        var options = vmAddSingleSelection.singleSelection.options;
+        options.push({
+          index: options.length,
+          body: "",
+          right: false
+        });
+      },
+
+      removeAddSingleSelectionLine: function(index) {
+        var options =  this.singleSelection.options;
+        options.splice(index, 1);
+        for (var i = index; i < options.length; ++i) {
+          options[i].index = i;
+          Vue.set(options, i, options[i]);
+        }
+        console.log(options);
+      },
+      changeRadio: function(index) {
+        this.singleSelection.options.map((v,i)=>{
+          if(i==index){
+            v.right = true
+          }else{
+            v.right = false
+          }
+        });
+      }
+    }
+  });
+  </script>
+</div>

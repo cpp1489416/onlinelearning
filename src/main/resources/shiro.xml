@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="unauthorizedUrl" value="/error/403.html"/>
+        <property name="successUrl" value="/"/>
+        <property name="loginUrl" value="/auth/login.html"/>
+        <property name="filters">
+            <map>
+            </map>
+        </property>
+        <property name="filterChainDefinitions">
+            <value>
+                /** = anon
+            </value>
+        </property>
+    </bean>
+
+    <!--1. 安全管理器-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="sessionManager" ref="sessionManager"/>
+        <property name="cacheManager" ref="customCacheManager"/>
+        <property name="realm" ref="shiroRealm"/>
+    </bean>
+
+    <!--2. 自定义Realm-->
+    <bean id="shiroRealm" class="cpp.user.web.UserRealm">
+        <!--启用缓存，默认关闭-->
+        <property name="cachingEnabled" value="true"/>
+        <!--启用身份验证缓存，即缓存AuthenticationInfo，默认false-->
+        <property name="authenticationCachingEnabled" value="true"/>
+        <!--启用授权缓存，即缓存AuthorizationInfo的信息，默认为false-->
+        <property name="authorizationCachingEnabled" value="true"/>
+        <property name="cacheManager" ref="customCacheManager"/>
+    </bean>
+
+    <!--6. 会话管理器-->
+    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <!--删除在session过期时跳转页面时自动在URL中添加JSESSIONID-->
+        <property name="sessionIdUrlRewritingEnabled" value="false" />
+        <!-- 设置超时时间，24小时，单位为毫秒 -->
+        <!-- <property name="globalSessionTimeout" value="1800000"/> -->
+        <property name="globalSessionTimeout" value="86400000"/>
+        <property name="deleteInvalidSessions" value="true"/>
+        <property name="sessionValidationSchedulerEnabled" value="true"/>
+        <property name="sessionIdCookieEnabled" value="true"/>
+        <property name="sessionDAO" ref="redisSessionDao"/>
+    </bean>
+
+    <!-- 7. 缓存管理器-->
+    <!-- 7.1 这里配置我们自定义的缓存管理器-->
+    <bean id="customCacheManager" class="cpp.common.redis.ShiroRedisCacheManager"/>
+
+</beans>
+

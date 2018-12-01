@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台管理</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../../commons/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../css/mstyle.css" rel="stylesheet"/>
+    <link href="../../css/reset.css" rel="stylesheet"/>
+    <script src="../../commons/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../commons/vue.js/vue.min.js"></script>
+    <script src="../../js/tools.js"></script>
+</head>
+
+<body class="">
+<!-- top 导航 -->
+<div id="header">
+    <script>
+        $(function () {
+            $("#header").load("../../commonpages/header.html");
+        })
+    </script>
+</div>
+<!-- 菜单导航 -->
+<div id="nav">
+    <script>
+        $(function () {
+            $("#nav").load("../nav.html", null, function () {
+                vmMNav.index = 1;
+            });
+        })
+    </script>
+</div>
+
+<div class="content" id="course">
+    <div class="container-fluid">
+        <div class="mt-15">
+            <div class="row-fluid">
+                <div class="cms-search">
+                    <input type="text" class="search-text" v-model="course.name"
+                           style="margin-top:5px;"
+                           placeholder="请输入课程名称">
+                    <input type="submit" class="search-btn" value="搜索" @click="load"/>
+                    <input type="button" class="search-btn" onclick="window.location.href='add.html'"
+                           value=" + 添加课程 "/>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="block span6" style="margin-bottom: 0px;">
+                <div id="widget2container" class="block-body">
+                    <table class="table list">
+                        <tbody>
+                        <tr v-for="course in courses">
+                            <td style="width:600px;">
+                                <p>
+                                    <a href="javascript:void(0);" @click="jumpToCoursePage(course.id)">
+                                        <img :src="course.imageUrl" style="width: 180px;height:100px;float: left;"/>
+                                    </a>
+                                    <div class="ml-15 w-350" style="float:left;">
+                                        <a href="javascript:void(0);" @click="jumpToCoursePage(course.id)">
+                                <p class="ellipsis" title="${item.name!}"><strong>{{course.name}}</strong></p>
+                                </a>
+                                <p class="ellipsis-multi h-40" title="${item.brief!}">{{course.description}}</p>
+                            </td>
+
+                            <td>
+                                <p>{{course.level}}</p>
+                            </td>
+                            <td>
+                                <p>{{course.updateTime}}</p>
+                            </td>
+                            <td style="width:120px;">
+                                <p><a href="javascript:void(0)" @click="removeCourse(course.id)">删除</a></p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div class="page-box clearfix">
+                <div class="page clearfix">
+                    <div style="float:left;">
+                        <a class="page-next" href="javascript:void(0);" @click="loadPage(1)">首 页</a>
+                        <a class="page-next" href="javascript:void(0);"
+                           @click="loadPage(page.pageIndex - 1)">上一页</a>
+
+                        <a href="javascript:void(0);" v-for="dot in page.dots"
+                           :class="{'page-cur':dot == page.pageIndex, 'page-num': dot != page.pageIndex}"
+                           @click="loadPage(dot)">{{dot}}</a>
+
+                        <a class="page-next" href="javascript:void(0);"
+                           @click="loadPage(page.pageIndex + 1)">下一页</a>
+                        <a class="page-next" href="javascript:void(0);" @click="loadPage(page.pageTotalCount)">尾
+                            页</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vmCourse = new Vue({
+        el: "#course",
+        data: {
+            courses: [],
+            course: {
+                name: ""
+            },
+            page: {
+                pageIndex: 1,
+                pageSize: 2
+            }
+        },
+        methods: {
+            load: function () {
+                vmCourse.page.pageSize = getQueryInt("pageSize");
+                if (vmCourse.page.pageSize == -1) {
+                    vmCourse.page.pageSize = 5;
+                }
+                vmCourse.loadPage(1);
+            },
+            jumpToCoursePage(id) {
+                window.location.href = "course.html?courseId=" + id;
+            },
+            loadPage: function (index) {
+                if (index < 1) {
+                    index = 1;
+                } else if (index > vmCourse.page.pageTotalCount) {
+                    index = vmCourse.page.pageTotalCount;
+                }
+
+                vmCourse.page.pageIndex = index;
+                $.ajax({
+                    type: "post",
+                    url: "../../course/myCoursesPage.action",
+                    dataType: "json",
+                    contentType: "application/json; charset=uft-8",
+                    data: JSON.stringify(
+                        {course: vmCourse.course, page: vmCourse.page}
+                    ),
+                    success: function (data) {
+                        vmCourse.page = data;
+                        vmCourse.courses = data.items;
+                    }
+                });
+            },
+            removeCourse: function(id) {
+                if (!confirm("是否要确认删除课程？")) {
+                    return;
+                }
+                $.ajax({
+                    url: "../../course/removeCourse.action",
+                    type: "get",
+                    data: {id: id},
+                    success: function(data) {
+                        vmCourse.load();
+                    }
+                });
+            }
+        }
+    });
+
+    vmCourse.load();
+</script>
+</body>
+</html>

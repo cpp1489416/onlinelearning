@@ -1,0 +1,93 @@
+
+<div class="card border-primary">
+    <div class="card-header">
+        添加章节
+    </div>
+    <div class="card-body">
+        <form id="infoForm" class="form-horizontal" role="form" action="#" onsubmit="return false">
+            <input type="hidden" name="courseId" id="courseIdHidden"/>
+            <div class="form-group row">
+                <label for="contentName" class="col-sm-2 col-form-label">章节名称</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="contentName" name="name" placeholder="请输入章节名称" required />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="contentIndex" class="col-sm-2 col-form-label">章节编号</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="contentIndex" name="index"/>
+                    <span class="help-block"><p class="text-info">章节编号是插入的章节编号，如果在中间插入章节编号，后面的章节编号全部向后移动一位。</p></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">章节类型</label>
+                <div class="col-sm-8">
+                    <div class="radio col-sm-4">
+                        <label><input type="radio" name="type" id="learningBodyRadio" value="learningbody" checked/>学习文字+图片</label>
+                    </div>
+                    <div class="radio col-sm-4  ">
+                        <label><input type="radio" name="type" value="exam"/>测验</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">说明</label>
+                <div class="col-sm-8">
+                    <p class="text-info">文字+图片是默认的学习方式。选教学视频只能添加教学视频。测验可以添加单选题（含答案），多选题（不含答案），问答题（有参考答案，不计入成绩），编程题（含测试样例）。</p>
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-8 offset-sm-2">
+                    <input type="submit" class="btn btn-primary" id="modifyButton" value="添加章节" onclick="addContent()"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $("#courseIdHidden").val(courseId);
+    var newLearningContentId = -1;
+
+    $.ajax({
+        type: "post",
+        url:"getlearningcontentcount.action",
+        data: {"courseId":courseId},
+        success: function(data) {
+            $("#contentIndex").val(data + 1);
+        }
+    })
+    function addContent() {
+        console.log($("#learningBodyRadio").prop("checked"));
+        if ($("#learningBodyRadio").prop("checked")) {
+            $.ajax({
+                type:"post",
+                url: "addlearningcontent.action",
+                data: $("#infoForm").serialize(),
+                success: function(data) {
+                    if (data.status == "success") {
+                        vmManage.reload();
+                    } else {
+                        alert(data.status);
+                    }
+                }
+            });
+        } else {
+            $.ajax({
+                type:"post",
+                url: "addexamcontent.action",
+                data: $("#infoForm").serialize(),
+                success: function(data) {
+                    if (data.status == "success") {
+                        vmManage.reload();
+                    } else {
+                        alert(data.status);
+                    }
+                }
+            });
+        }
+
+    }
+
+</script>

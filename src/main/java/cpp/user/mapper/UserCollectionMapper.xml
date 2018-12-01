@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.user.mapper.UserCollectionMapper">
+    <select id="getByUserIdAndCourseId" parameterType="cpp.user.po.UserCollection" resultType="cpp.user.po.UserCollection">
+        select * from user_collection where userId = #{userId} and courseId  = #{courseId}
+    </select>
+
+    <insert id="add" parameterType="cpp.user.po.UserCollection">
+        insert into user_collection(userId, courseId, name) values(#{userId}, #{courseId}, #{name})
+    </insert>
+
+    <delete id="removeByUserIdAndCourseId" parameterType="cpp.user.po.UserCollection">
+        delete from user_collection where courseId = #{courseId} and userId = #{userId}
+    </delete>
+
+    <select id="listCourseCollectionsByUserId" parameterType="int" resultType="cpp.user.po.UserCollection">
+        select * from user_collection where userId = #{userId} order by updateTime desc
+    </select>
+</mapper>

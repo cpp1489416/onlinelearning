@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>课程信息</title>
+    <script src="../../../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../../../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet" />
+    <script src="../../../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../../commons/vue.js/vue.min.js"></script>
+    <script src="../../../js/main.js"></script>
+    <!-- ueditor -->
+    <script type="text/javascript" charset="utf-8" src="../../../commons/ueditor-1.4.3.3/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../../commons/ueditor-1.4.3.3/ueditor.all.min.js"> </script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="../../../commons/ueditor-1.4.3.3/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .table tbody tr td{
+        vertical-align: middle;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="header"></div>
+    <div class="container" id="containerDiv">
+        <div class="row">
+            <div class="col-sm-9">
+                <div id="mainDiv"></div>
+            </div>
+            <div class="col-sm-3">
+                <div class="list-group-item disabled"> 课程概述 </div>
+                <a href="javascript:void(0);"id="aMainItem" class="list-group-item" onclick="loadCourseInfoPage()">课程信息</a>
+                <a href="javascript:void(0);" id="bMainItem" class="list-group-item" onclick="loadAddContent()">添加章节</a>
+                <br/>
+                <div class="btn-group btn-block">
+                    <button type="button" id="learningContentButton"  class="btn btn-default col-lg-6 active" onclick="loadLearningContents()">课程</button>
+                    <button type="button" id="examContentButton"  class="btn col-lg-6 btn-default" onclick="loadExamContents()">测验</button>
+                </div>
+
+                <div id="contentsDiv"> </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var courseId = 0;
+        var learningContentId = 0;
+        var examContentId = 0;
+        var contentName = "";
+        UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+        UE.Editor.prototype.getActionUrl = function(action) {
+            if (action == 'uploadimage' || action == 'uploadscrawl' || action == 'uploadimage') {
+                return '../../ueditorimageupload.action'; //在这里返回我们实际的上传图片地址
+            } else {
+                return this._bkGetActionUrl.call(this, action);
+            }
+        }
+
+        function initManage() {
+            courseId = getQueryInt("courseId");
+            learningContentId = getQueryInt("learningContentId");
+            examContentId = getQueryInt("examContentId");
+            if (learningContentId <= 0 && examContentId <= 0) {
+                $("#aMainItem").addClass("active");
+            }
+            $.ajax({
+                url: "../../userinfo.action",
+                type: "POST",
+                success: function(data) {
+                    if (data == null || data == "") {
+                        alert("请先登陆");
+                        window.location.href = "../../../index.html";
+                    } else {
+                        if (learningContentId <= 0 && examContentId <= 0) {
+                            loadCourseInfoPage();
+                            loadLearningContents();
+                        } else if (learningContentId > 0) {
+                            loadLearningContents();
+                        } else {
+                            loadExamContents();
+                        }
+                    }
+                },
+                error: function() {
+                    alert("网络错误");
+                }
+            })
+        }
+
+        function loadCourseInfoPage() {
+            $("#mainDiv").load("courseinfo.html");
+        }
+
+        function loadAddContent() {
+            $("#mainDiv").load("addcontent.html");
+        }
+
+        function loadLearningContents() {
+            $("#learningContentButton").addClass("active");
+            $("#examContentButton").removeClass("active");
+
+            $.ajax({
+                type: "post",
+                url: "../../learningcontents.action",
+                data: {"courseId": courseId},
+                success: function(data) {
+                    createLearningContents(data);
+                    updateContentItemClicks();
+                }
+            });
+        }
+
+        function jumpToLearningContentPage(id, name) {
+          window.location.href="manage.html?courseId=" + courseId + "&learningContentId=" + id;
+        }
+
+        function createLearningContents(data) {
+            var str = "";
+            for (var i = 0; i < data.length; ++i) {
+                var content = data[i];
+                var token = `
+                <a href="javascript:void(0);" id="learningContentlearningContentIdItem" class="list-group-item" onclick="loadLearningContentPage(learningContentId, 'name')">index：name</a>
+                `;
+                token = token.replace(/learningContentId/g, content.learningContentId);
+                token = token.replace(/index/g, content.index);
+                token = token.replace(/learningContentId/g, content.learningContentId);
+                token = token.replace(/name/g, content.name);
+                str += token;
+                if (learningContentId == content.learningContentId) {
+                    loadLearningContentPage(learningContentId, content.name);
+                }
+            }
+            $("#contentsDiv").html(str);
+
+            if (learningContentId > 0) {
+                $("#learningContent" + learningContentId + "Item").addClass("active");
+                $("[id$='MainItem']").removeClass("active");
+            }
+        }
+
+        function loadExamContents() {
+            $("#learningContentButton").removeClass("active");
+            $("#examContentButton").addClass("active");
+
+            $.ajax({
+                type: "post",
+                url: "../../examcontents.action",
+                data: {"courseId": courseId},
+                success: function(data) {
+                    createExamContents(data);
+                    updateContentItemClicks();
+                }
+            });
+        }
+
+        function createExamContents(data) {
+            var str = "";
+            for (var i = 0; i < data.length; ++i) {
+                var content = data[i];
+                var token = `
+                <a href="javascript:void(0);" id="examContentexamContentIdItem" class="list-group-item" onclick="loadExamContentPage(examContentId, 'name')">index：name</a>
+                `;
+                token = token.replace(/index/g, content.index);
+                token = token.replace(/examContentId/g, content.examContentId);
+                token = token.replace(/name/g, content.name);
+                str += token;
+                if (examContentId == content.examContentId) {
+                    loadExamContentPage(examContentId, content.name);
+                }
+            }
+            $("#contentsDiv").html(str);
+            if (examContentId > 0) {
+                $("#examContent" + examContentId + "Item").addClass("active");
+                $("[id$='MainItem']").removeClass("active");
+            }
+        }
+
+        function updateContentItemClicks() {
+            $(".list-group-item").on("click", function() {
+                $(".list-group-item").removeClass("active");
+                $(this).addClass("active");
+            })
+        }
+
+        function updateMainItemClicks() {
+            $("[id$='MainItem']").on("click", function() {
+                $("[id$='MainItem']").removeClass("active");
+                $(this).addClass("active");
+            })
+        }
+
+        function loadLearningContentPage(id, name) {
+            learningContentId = id;
+            contentName = name;
+            $("#mainDiv").load("learningbody.html");
+        }
+
+        function loadExamContentPage(id, name) {
+            examContentId = id;
+            contentName = name;
+            $("#mainDiv").load("exam.html");
+        }
+
+        $(function() {
+            updateMainItemClicks();
+            initManage();
+        })
+    </script>
+
+</body>
+
+</html>

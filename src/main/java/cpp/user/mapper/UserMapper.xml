@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.user.mapper.UserMapper">
+    <insert id="addUser" parameterType="cpp.user.po.User">
+        insert into user (username, password, nickname, sex, age, description, headImageUrl)
+        values (#{username}, #{password}, #{nickname}, #{sex}, #{age}, #{description}, #{headImageUrl})
+    </insert>
+
+    <select id="getUserById" resultType="cpp.user.po.User">
+        select *
+        from user
+        where id = #{id}
+    </select>
+
+    <select id="getUserByUsername" parameterType="string" resultType="cpp.user.po.User">
+        select *
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="getUserByUsernameAndPassword" parameterType="cpp.user.po.User" resultType="cpp.user.po.User">
+        select *
+        from user
+        where username = #{username} and password = #{password}
+    </select>
+
+    <update id="modify" parameterType="cpp.user.po.User">
+        update user
+        set nickname     = #{nickname}, sex = #{sex}, age = #{age}, qq = #{qq}, description = #{description},
+            headImageUrl = #{headImageUrl}
+        where id = #{id}
+    </update>
+
+    <update id="modifyPassword" parameterType="cpp.user.po.User">
+        update user
+        set password = #{password}
+        where id = #{id}
+    </update>
+
+    <select id="getUsersCount" parameterType="cpp.user.po.User" resultType="java.lang.Integer">
+        select count(*) from user
+        <where>
+            <if test="role != null and role != -1">
+                and role = #{role}
+            </if>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname like concat('%', #{nickname}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="listUsersPage" resultType="cpp.user.po.User">
+        select * from user
+        <where>
+            <if test="entity.role != null and entity.role != -1">
+                and role = #{entity.role}
+            </if>
+            <if test="entity.username != null and entity.username != ''">
+                and username like concat('%', #{entity.username}, '%')
+            </if>
+            <if test="entity.nickname != null and entity.nickname != ''">
+                and nickname like concat('%', #{entity.nickname}, '%')
+            </if>
+        </where>
+        order by username
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <update id="modifyRole" parameterType="cpp.user.po.User">
+        update user set role = #{role} where id = #{id}
+    </update>
+</mapper>

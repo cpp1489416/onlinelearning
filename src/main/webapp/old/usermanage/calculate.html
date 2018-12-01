@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>自己的课程</title>
+    <script src="../js/jquery-3.3.1.js"></script>
+    <link href="../css/bootstrap.css" rel="stylesheet" />
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../../js/main.js"></script>
+</head>
+
+<body>
+    <div id="header" style="min-height:51px; margin-bottom:20px;"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <div>
+                    <a href="myinfo.html" class="list-group-item">个人信息</a>
+                    <a href="learncourses.html" class="list-group-item">所学课程</a>
+                    <a href="mycourses.html" class="list-group-item">我的课程</a>
+                    <a href="calculate.html" class="list-group-item active">统计信息</a>
+                </div>
+
+            </div>
+            <div class="col-sm-8">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        我学习的课程
+                    </div>
+                    <div class="panel-body">
+                        ￥￥￥￥
+                    </div>
+                </div>
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        我创建的课程
+                    </div>
+                    <div class="panel-body">
+                       ￥￥￥￥
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        init();
+
+        function init() {
+            $.ajax({
+                url: "../userinfo.action",
+                type: "POST",
+                success: function(data) {
+                    if (data == null || data == "") {
+                        alert("请先登陆");
+                        window.location.href = "../login.html";
+                    }
+                },
+                error: function() {
+                    alert("网络错误");
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

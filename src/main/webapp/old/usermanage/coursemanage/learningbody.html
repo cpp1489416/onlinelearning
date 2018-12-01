@@ -1,0 +1,111 @@
+
+<div class="card border-primary">
+    <div class="card-header">
+         章节内容
+         <a class="pull-right" href="javascript:void(0);" onclick="learningbodyChangeContainer()">
+           <span class="glyphicon glyphicon-fullscreen"  style="color: rgb(0, 0, 0);"  ></span>
+           <script>
+            function learningbodyChangeContainer() {
+              if ($("#containerDiv").hasClass("container")) {
+                $("#containerDiv").removeClass("container");
+                $("#containerDiv").addClass("container-fluid");
+              } else {
+                $("#containerDiv").removeClass("container-fluid");
+                $("#containerDiv").addClass("container");
+              }
+            }
+           </script>
+         </a>
+    </div>
+    <div class="card-body">
+        <form role="form" onsubmit="return false">
+            <div class="form-group">
+                <label for="learningBodyName">章节名称</label>
+                <input type="text" class="form-control" id="contentName" placeholder="请输入章节名称"/>
+             </div>
+            <div class="form-group">
+                <label for="learningBodyTextArea">章节内容</label>
+                <script id="container" name="content" type="text/plain">
+                你去干什么啊？
+                </script>
+            </div>
+            <div class="form-group">
+                <button class="col-sm-6 btn btn-success " onclick="modifyLearningBody()">更改文档内容</button>
+                <button type="button" class="btn btn-danger pull-right" onclick="removeLearningBody()">删除本章节</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  var ue = null;
+  loadLearningBody();
+
+  $("#contentName").val(contentName);
+
+  function loadLearningBody() {
+      $.ajax({
+          type: "post",
+          url: "../../learningbody.action",
+          data: {"learningContentId": learningContentId},
+          success: function(data) {
+            $("#container").html(data.learningBody);
+
+            // 配置 UEditor
+            UE.delEditor("container")
+            ue = UE.getEditor('container',{initialFrameWidth: null});
+
+
+            $("#learningBodyName").val(data.name);
+          }
+      })
+  }
+
+  function modifyLearningBody() {
+      $.ajax({
+          type: "post",
+          url: "modifylearningbody.action",
+          data: {"learningContentId": learningContentId, "learningBody": ue.getContent()},
+          success: function(data) {
+              if (data.status == "success") {
+                  modifyLearningContent();
+              } else {
+                  alert(data.status);
+              }
+          }
+      });
+  }
+
+  function modifyLearningContent() {
+      $.ajax({
+          type:"post",
+          url: "modifylearningcontent.action",
+          data:{"learningContentId":learningContentId, "name": $("#contentName").val()},
+          success(data) {
+              alert("修改成功");
+              vmManage.reload();
+          }
+      })
+  }
+
+  function removeLearningBody() {
+    if (!confirm("是否确认删除本章节？")) {
+      return;
+    }
+    $.ajax({
+      type: "post",
+      url: "deletelearningcontent.action",
+      data: {"learningContentId":learningContentId},
+      success: function(data) {
+          if (data.status == "success") {
+
+              $("#mainDiv").load("courseinfo.html");
+              vmManage.reload();
+              vmManage.clearAllSelected();
+          } else {
+              alert(data.status);
+          }
+      }
+    });
+  }
+</script>

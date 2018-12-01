@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <style>
+        .body {
+            width: 1220px;
+            margin: auto;
+            clear: both;
+            overflow: hidden;
+            min-height: 100%;
+        }
+
+        .body-left {
+            width: 820px;
+            /*border: 1px solid black;*/
+            min-height: 500px;
+            margin: 0px 0px 0px 20px;
+            float: left;
+        }
+
+        .course-title {
+            font-size: 30px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            line-height: 40px;
+            /*border: 1px solid black;*/
+        }
+
+        .course-line {
+            margin: 30px 0px;
+            /*border: 1px solid pink;*/
+            height: 50px;
+        }
+
+        .course-learn-btn {
+            height: 50px;
+            line-height: 50px;
+            width: 150px;
+            background-color: #000091;
+            color: white;
+            font-size: 19px;
+            border: none;
+            margin-right: 10px;
+            display: inline-block;
+            cursor: pointer;
+            vertical-align: top;
+        }
+
+        .course-learn-btn:hover {
+            background-color: gray;
+        }
+
+        .course-learn-btn:active {
+            background-color: #0000d9;
+        }
+
+        .course-line-static {
+            height: 50px;
+            width: 150px;
+            /*background-color: red;*/
+            display: inline-block;
+            margin-left: -4px;
+            border-right: 1px gray solid;
+            vertical-align: top;
+        }
+
+        .course-line-meta {
+            margin: auto auto;
+            width: 100px;
+            height: 25px;
+            text-align: center;
+            line-height: 25px;
+            display: block;
+            vertical-align: top;
+            font-size: 10px;
+            /*background-color: blue;*/
+        }
+
+        .course-description {
+            /*background-color: aliceblue;*/
+            margin: 30px 0px 0px 0px;
+            overflow: visible;
+            font-size: 16px;
+            vertical-align: top;
+            text-align: left;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+
+        .i-course-content {
+            overflow: hidden;
+            background-color: #f9f9f9;
+            margin: 0px 0px 20px 0px;
+            padding-bottom: 20px;
+        }
+
+        .i-content-title {
+            margin: 20px 20px 10px 20px;
+            font-weight: 500;
+            font-size: 17px;
+        }
+
+        .i-small-content {
+            margin: 0px 5px 0px 30px;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 30px;
+            vertical-align: top;
+        }
+
+        .i-small-content:hover {
+            background-color: #dcdcdc;
+        }
+
+        .i-small-content-img {
+            width: 30px;
+            height: 30px;
+            background: url("../img/content.png");
+            display: inline-block;
+            float: left;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .course-following {
+            background: url("../img/following.png") no-repeat;
+            float: right;
+            width: 50px;
+            height: 40px;
+            margin: 5px;
+        }
+
+        .course-followed {
+            background: url("../img/followed.png") no-repeat;
+            float: right;
+            width: 50px;
+            height: 40px;
+            margin: 5px;
+        }
+
+        .course-menu-item {
+            height: 35px;
+            width: 100px;
+            line-height: 35px;
+            display: inline-block;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .cur {
+            color: white;
+            background-color: #c7c7c7;
+            border-radius: 1000px;
+        }
+
+        hr {
+            height: 1px;
+            margin: 15px 0;
+        }
+
+        .content-title {
+            background-color: #f7f7f7;
+            padding: 10px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .content-sub {
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin: 10px 0px 10px 40px;
+            cursor: pointer;
+        }
+
+        .content-sub:hover {
+            color: white;
+            background-color: rgba(38, 38, 38, 0.7);
+            padding: 10px;
+            margin-left: 40px;
+        }
+
+        .drop-down {
+            float: right;
+        }
+
+        .comment {
+            background-color: #f8f8f8;
+            padding: 15px;
+            height: auto;
+            min-height: 1px;
+            overflow: auto;
+            margin-top: 0px;
+        }
+
+        .comment-img {
+            border-radius: 50%;
+            width: 50px;
+            height: 100%;
+            display: inline-block;
+            margin-right: 30px;
+        }
+
+        .comment-main {
+            float: right;
+            width: 700px;
+        }
+
+        .comment-title {
+            font-weight: bold;
+        }
+
+        .comment-content {
+            margin: 5px 0px !important;
+        }
+
+        .comment-footer {
+            margin: 0px 0px !important;
+        }
+
+        .main-course-right {
+            float: right;
+            width: 300px;
+            min-height: 500px;
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+
+        .comment-box {
+            margin: 20px 0px 20px 0px;
+            border: 1px solid lightgray;
+            padding: 15px;
+            background-color: #ebebeb;
+        }
+
+        .comment-box textarea {
+            margin: 10px 0px 10px 0px;
+            border: 1px solid lightgray;
+            width: 100%;
+        }
+
+        .comment-box button {
+            background-color: blue;
+            color: white;
+            width: 150px;
+            height: 30px;
+            border: 0;
+            border-radius: 10px;
+        }
+
+        .no-content {
+            font-size: 30px;
+            color: #c5c5c5;
+            margin-bottom: 50px;
+        }
+
+        .obtain-box {
+            font-size: 20px;
+        }
+
+        .obtain-box input {
+            line-height: 20px;
+            font-size: 17px;
+            width: 300px;
+            padding: 10px;
+            height: 40px;
+            display: inline-block;
+        }
+        .obtain-box label {
+            line-height: 20px;
+            font-size: 20px;
+        }
+
+        .obtain-box div {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .obtain-box-error {
+            color: red;
+            display: inline-block;
+            margin-left: 20px;
+        }
+
+        .obtain-box button {
+            margin-top: 20px;
+            background-color: #000080;
+            height: 40px;
+            font-size: 15px;
+            width: 300px;
+            display: block;
+            color: white;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="wrap">
+    <div class="body" id="learn">
+
+        <div class="body-left">
+            <div class="course-title">{{info.course.name}}</div>
+
+            <div class="course-line">
+                <button href="javascript:void(0);" class="course-learn-btn" @click="continueLearn">
+                    {{loggedIn? (vmLearn.info.currentCourseContent.id == -1? "开始学习" : "继续学习") : "请先登录"}}
+                </button>
+
+                <div class="course-line-static">
+                    <div class="course-line-meta">上次学到</div>
+                    <div class="course-line-meta">{{info.currentCourseContent.name}}</div>
+                </div>
+                <div class="course-line-static">
+                    <div class="course-line-meta">学习人数</div>
+                    <div class="course-line-meta">{{info.course.countPeople}}</div>
+                </div>
+                <div class="course-line-static">
+                    <div class="course-line-meta">难度级别</div>
+                    <div class="course-line-meta">
+                        {{info.course.level==1?"初级":info.course.level==2?"中级":info.course.level==3?"高级":info.course.level}}
+                    </div>
+                </div>
+                <a @click="swapCollection" href="javascript:void(0)"
+                   :class="{'following':!isCollected,'followed':isCollected}" style="float: right;margin-top:5px;"
+                   title="收藏"></a>
+            </div>
+            <div class="course-description">
+                课程简介：{{info.course.description}}
+            </div>
+
+
+            <div href="javascript:void(0);" @click="curContent=true"
+                 :class="{'course-menu-item':true, 'cur': curContent}">
+                章节
+            </div>
+            <div href="javascript:void(0);" @click="curContent=false"
+                 :class="{'course-menu-item':true, 'cur': !curContent}">
+                评论
+            </div>
+
+            <div>
+                <div class="obtain-box" v-show="!info.course.isObtained">
+                    <label>
+                        <div>不好意思，您要认证才能学习这门课</div>
+                        <input type="text" placeholder="请输入课程密码" v-model="obtainInfo.secretCode"/>
+                        <div class="obtain-box-error">{{obtainInfo.error}}</div>
+                        <button @click="obtainCourse">提交</button>
+                    </label>
+                </div>
+                <div v-for="fcontent in info.contents" v-show="curContent" class="i-course-content">
+                    <div class="i-content-title">{{fcontent.name}}</div>
+                    <div>
+                        <div class="i-small-content" v-for="ccontent in fcontent.contents"
+                             @click="jumpToContentPage(ccontent.id)">
+                            <div class="i-small-content-img"></div>
+                            &nbsp;{{ccontent.name}}
+                            <div class="preview-btn" v-show="info.currentCourseContent.id==ccontent.id">
+                                继续学习
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="no-content" v-show="!curContent && comments.length == 0">
+                    不好意思，现在还没有评论
+                </div>
+                <div class="comment" v-for="comment in comments" v-show="!curContent">
+                    <img class="comment-img" :src="comment.headImageUrl"/>
+                    <div class="comment-main">
+                        <div class="comment-title"> {{comment.nickname}} 的评论：</div>
+                        <div class="comment-content">
+                            {{comment.text}}
+                        </div>
+                        <div class="comment-footer">
+                            时间：{{comment.updateTime}}
+                        </div>
+                    </div>
+                </div>
+                <div class="page-box" v-show="!curContent && !commentsPage.isEmpty">
+                    <div class="page clearfix">
+                        <div style="float:left;">
+                            <a class="page-next" href="javascript:void(0);" @click="loadComments(1)">首 页</a>
+                            <a class="page-next" href="javascript:void(0);"
+                               @click="loadComments(commentsPage.pageIndex - 1)">上一页</a>
+
+                            <a href="javascript:void(0);"
+                               :class="{'page-cur':dot == commentsPage.pageIndex, 'page-num': true}"
+                               v-for="dot in commentsPage.dots"
+                               @click="loadComments(dot)">{{dot}}</a>
+
+                            <a class="page-next" href="javascript:void(0);"
+                               @click="loadComments(commentsPage.pageIndex + 1)">下一页</a>
+                            <a class="page-next" href="javascript:void(0);"
+                               @click="loadComments(commentsPage.pageTotalCount)">
+                                尾 页
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-box" v-show="!curContent && loggedIn">
+                    <span id="commentTitle">发布评论：</span> <br/>
+                    <textarea cols="100" v-model="commentText"></textarea> <br/>
+                    <button type="button" @click="submitComment()">发布</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-course-right">
+            <img :src="info.course.imageUrl" class="course-image"/>
+            <br/>
+            <br/>
+            <div class="lecturer-item" style="width: 100%;">
+                <img class="lecturer-uimg" :src="info.author.headImageUrl">
+                <span class="lecturer-name">{{info.author.nickname}}</span>
+                <span class="lecturer-title">课程教师</span>
+                <span class="lecturer-p">{{info.author.description}}</span>
+                <a href="javascript:void(0)" @click="swapFollow"><span
+                        :class="{'follow-btn': !isFollowed, 'unfollow-btn': isFollowed}">{{!isFollowed?"关注+":"取消关注-"}}</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <script>
+        $(function () {
+            $("#footer").load("/onlinelearning/commonpages/footer.html");
+        })
+    </script>
+</div>
+
+<script>
+    var vmLearn = new Vue({
+        el: "#learn",
+        data: {
+            courseId: -1,
+            info: {
+                author: {},
+                course: {
+                    isObtained: true
+                },
+                contents: [],
+                comments: [],
+                currentCourseContent: {}
+            },
+            isCollected: false,
+            curContent: true,
+            commentText: "",
+            isFollowed: false,
+            loggedIn: false,
+            comments: [],
+            comment: {},
+            commentsPage: {
+                pageSize: 5,
+                pageIndex: 1,
+                pageTotalCount: 1,
+                isEmpty: false
+            },
+            obtainInfo: {
+                secretCode: "",
+                courseId: 0,
+                error: ""
+            }
+        },
+        methods: {
+            load: function () {
+                vmLearn.courseId = getQueryString("courseId");
+                $.ajax({
+                    url: "course.action",
+                    data: {courseId: vmLearn.courseId},
+                    success: function (data) {
+                        vmLearn.info = data;
+
+                        $.ajax({
+                            url: "../collection/isCollected.action",
+                            data: {courseId: vmLearn.courseId},
+                            success: function (data) {
+                                vmLearn.isCollected = data.code == 1;
+                            }
+                        });
+
+                        $.ajax({
+                            url: "../follow/isFollowed.action",
+                            data: {followUserId: vmLearn.info.author.id},
+                            success: function (data) {
+                                vmLearn.isFollowed = data.code == 1;
+                            }
+                        });
+                    }
+                });
+
+                $.ajax({
+                    url: "../user/user.action",
+                    success: function (data) {
+                        if (data == null || data == "") {
+                            vmLearn.loggedIn = false;
+                        } else {
+                            vmLearn.loggedIn = true;
+                        }
+                    }
+                });
+                vmLearn.loadComments(1);
+            },
+            swapCollection: function () {
+                $.ajax({
+                    url: "../collection/swapCollection.action",
+                    data: {courseId: vmLearn.courseId},
+                    success: function (data) {
+                        vmLearn.isCollected = data.code == 1;
+                    }
+                });
+            },
+            swapFollow: function () {
+                $.ajax({
+                    url: "../follow/swapFollow.action",
+                    data: {followUserId: vmLearn.info.author.id},
+                    success: function (data) {
+                        vmLearn.isFollowed = data.code == 1;
+                    }
+                });
+            },
+            submitComment: function () {
+                $.ajax({
+                    type: "post",
+                    url: "../comment/comment.action",
+                    data: {courseId: vmLearn.courseId, text: vmLearn.commentText},
+                    success: function () {
+                        alert("评论发表成功");
+                        window.location.reload();
+                    }
+                });
+            },
+            jumpToContentPage: function (contentId) {
+                window.location.href = "content.html?contentId=" + contentId + "&courseId=" + vmLearn.courseId;
+            },
+            continueLearn: function () {
+                if (!vmLearn.loggedIn) {
+                    vmLearn.showLoginModal();
+                    return;
+                }
+                if (vmLearn.info.currentCourseContent.id == -1) {
+                    vmLearn.jumpToContentPage(vmLearn.info.contents[0].contents[0].id);
+                    return;
+                }
+                vmLearn.jumpToContentPage(vmLearn.info.currentCourseContent.id);
+            },
+            loadComments: function (index) {
+                if (index < 1 || index > vmLearn.commentsPage.pageTotalCount) {
+                    return;
+                }
+                vmLearn.commentsPage.pageIndex = index;
+                vmLearn.comment.courseId = vmLearn.courseId;
+                $.ajax({
+                    type: "post",
+                    url: "../comment/commentsPage.action",
+                    dataType: "json",
+                    contentType: "application/json; charset=uft-8",
+                    data: JSON.stringify(
+                        {comment: vmLearn.comment, page: vmLearn.commentsPage}
+                    ),
+                    success: function (data) {
+                        vmLearn.commentsPage = data;
+                        vmLearn.comments = data.items;
+                    }
+                });
+            },
+            obtainCourse: function() {
+                $.ajax({
+                    url: "obtainCourse.action",
+                    type: "post",
+                    data: {
+                        courseId: vmLearn.courseId,
+                        secretCode: vmLearn.obtainInfo.secretCode
+                    },
+                    success: function(data) {
+                        if (data.status == "success") {
+                            window.location.reload();
+                        } else {
+                            vmLearn.obtainInfo.error = data.status;
+                        }
+                    }
+                })
+            }
+        }
+    });
+
+    vmLearn.load();
+
+</script>
+</body>
+
+</html>

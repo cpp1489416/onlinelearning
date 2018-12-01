@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.course.mapper.CourseCommentMapper">
+    <select id="listComments" parameterType="cpp.course.po.CourseComment" resultType="cpp.course.po.CourseComment">
+        select course_comment.*, user.username, user.nickname, user.headImageUrl
+        from course_comment inner join user on user.id = course_comment.userId
+        <where>
+            courseId = #{courseId}
+            <if test="contentId != null and contentId != 0">
+                and contentId = #{contentId}
+            </if>
+        </where>
+        order by updateTime desc
+    </select>
+
+    <insert id="add" parameterType="cpp.course.po.CourseComment">
+        insert into course_comment (userId, courseId, contentId, text)
+        values (#{userId}, #{courseId}, #{contentId}, #{text})
+    </insert>
+
+    <select id="getCommentsCount" parameterType="cpp.course.po.CourseComment" resultType="int">
+        select count(*)
+        from course_comment
+        <where>
+            courseId = #{courseId}
+            <if test="contentId != null and contentId != 0">
+                and contentId = #{contentId}
+            </if>
+        </where>
+    </select>
+
+    <select id="listCommentsPage" resultType="cpp.course.po.CourseComment">
+        select course_comment.*, user.username, user.nickname, user.headImageUrl
+        from course_comment inner join user on user.id = course_comment.userId
+        <where>
+            courseId = #{entity.courseId}
+            <if test="entity.contentId != null and entity.contentId != 0">
+                and contentId = #{entity.contentId}
+            </if>
+        </where>
+        order by updateTime desc
+        limit #{page.startIndex}, #{page.pageSize}
+    </select>
+
+    <select id="getById" parameterType="int" resultType="cpp.course.po.CourseComment">
+        select * from course_comment where id = #{id}
+    </select>
+
+    <delete id="removeById" parameterType="int">
+        delete from course_comment where id = #{id}
+    </delete>
+</mapper>

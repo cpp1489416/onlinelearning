@@ -1,0 +1,93 @@
+
+
+@import "reset-back.css";
+
+body, html {
+    height: 100%;
+}
+
+html {
+    overflow-y: scroll;
+}
+
+.wrap {
+    min-height: calc(100vh - 240px);
+    margin:0;
+    padding:0;
+}
+
+.header {
+    width: 100%;
+    min-width: 1200px;
+    height: 80px;
+    background-color: #E6E6E6;
+    margin:0;
+}
+
+.header-box {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.header-nav {
+    height: 80px;
+    line-height: 80px;
+    display: inline-block;
+}
+
+.header-nav-item {
+    padding: 0 20px;
+    font-size: 17px;
+    text-decoration: none;
+    color: black;
+    height: 100%;
+    line-height: 100%;
+}
+
+.header-nav-item:hover {
+    padding: 0 20px;
+    text-decoration: none;
+}
+
+.header-image {
+    width: 35px;
+    height: 35px;
+    vertical-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.header-user-name {
+    width: auto;
+    padding: 0px 10px;
+    line-height: 50px;
+    font-size: 15px;
+    display :  inline-block;
+    cursor: pointer;
+    text-align:right;
+    overflow: visible;
+    z-index: 10000000;
+}
+
+.header-user-name-content {
+    margin-top: 0px;
+    display: none;
+    position: absolute;
+    background-color: rgb(184, 194, 207);
+    width :100px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border: 1px black solid;
+    z-index: 10000000;
+    overflow: visible;
+}
+
+.header-user-name:hover .header-user-name-content {
+    display: block;
+}
+
+.header-user-name-content:hover {
+    background-color: #d8e3f0;
+}

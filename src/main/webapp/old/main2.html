@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <link href="../commons/jquery-ui-1.12.1.custom/jquery-ui.min.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <style>
+        .body {
+            width: 1200px;
+            margin: auto;
+        }
+        .body-left {
+            width: 820px;
+            /*border: 1px solid black;*/
+            min-height: 500px;
+            margin: 30px 0px;
+        }
+
+        .course-title {
+            font-size: 32px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            line-height: 30px;
+            /*border: 1px solid black;*/
+        }
+
+        .course-line {
+            margin: 15px 0px;
+            /*border: 1px solid pink;*/
+            height: 50px;
+        }
+
+        .course-learn-btn {
+            height :50px;
+            line-height: 50px;
+            width: 150px;
+            background-color: blue;
+            color: white;
+            font-size: 15px;
+            border-radius: 10px;
+            border: none;
+            margin-right: 10px;
+            display:inline-block;
+            cursor: pointer;
+            vertical-align: top;
+        }
+        .course-line-static {
+            height: 50px;
+            width: 150px;
+            /*background-color: red;*/
+            display: inline-block;
+            margin-left:-4px;
+            border-right: 1px gray solid;
+            vertical-align: top;
+        }
+        .course-line-meta {
+            margin: auto auto;
+            width: 100px;
+            height: 25px;
+            text-align:center;
+            line-height: 25px;
+            display: block;
+            vertical-align: top;
+            font-size: 10px;
+            /*background-color: blue;*/
+        }
+
+        .course-description {
+            height: 60px;
+            /*background-color: aliceblue;*/
+            margin: 15px 0px 30px 0px   ;
+            overflow: hidden;
+            line-height: 30px;
+        }
+
+        .course-following {
+            background: url("../img/following.png") no-repeat;
+            float: right;
+            width: 50px;
+            height: 40px;
+            margin: 5px;
+        }
+        .course-followed {
+            background: url("../img/followed.png") no-repeat;
+            float: right;
+            width: 50px;
+            height: 40px;
+            margin: 5px;
+        }
+
+        .course-menu-item {
+            height: 30px;
+            width: 100px;
+            line-height: 30px;
+            display:inline-block;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cur {
+            color: blue;
+        }
+
+        hr {
+            height: 1px;
+            margin: 15px 0;
+        }
+
+        .content-title {
+            background-color: #dfdfdf;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .content-sub {
+            background-color: #dfdfdf;
+            padding: 10px;
+            margin: 10px 0px 10px 40px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .content-sub:hover {
+            color: white;
+            background-color: rgba(38, 38, 38, 0.7);
+            padding: 10px;
+            margin-left: 40px;
+            border-radius: 5px;
+        }
+
+        .drop-down {
+            float: right;
+        }
+
+        .comment {
+            border: 1.5px solid lightblue;
+            border-radius: 25px;
+            padding: 15px;
+            height: auto;
+            overflow: auto;
+        }
+
+        .comment-img {
+            border-radius: 50%;
+            width: 50px;
+            height: 100%;
+            display: inline-block;
+            margin-right: 30px;
+        }
+
+        .comment-main {
+            float:right;
+            width: 700px;
+        }
+
+        .comment-title {
+            font-weight: bold;
+        }
+
+        .comment-content {
+            margin: 5px 0px !important;
+        }
+
+        .comment-footer {
+            margin: 5px 0px !important;
+        }
+
+    </style>
+</head>
+<body>
+<div id="header">
+    <script>
+        $(function() {
+            $("#header").load("../commonpages/header.html");
+        })
+    </script>
+</div>
+<div class="body">
+    <div class="body-left">
+        <div class="course-title">周启明的信息学习</div>
+        <div class="course-line">
+            <button class="course-learn-btn">继续学习</button>
+            <div class="course-line-static">
+                <div class="course-line-meta">课程时间</div>
+                <div class="course-line-meta">课程时间</div>
+            </div>
+            <div class="course-line-static">
+            </div>
+            <a class="course-following"></a>
+        </div>
+        <div class="course-description">
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+            dsafffffffffffffffffffffffffff
+        </div>
+
+        <span class="course-menu-item">章节</span>
+        <span class="course-menu-item cur">评价</span>
+        <hr/>
+        <div>
+            <div class="content-title">&nbsp;+&nbsp;<strong>周少吃屎</strong> <span class="drop-down">👇</span></div>
+            <div class="content-sub">周少吃屎</div>
+            <hr/>
+            <div class="content-title"><strong>周少吃屎</strong> <span class="drop-down">👇</span></div>
+            <div class="content-sub">周少吃屎</div>
+        </div>
+
+        <div class="comment">
+            <img class="comment-img" src="http://pbsjqdbja.bkt.clouddn.com/gCXeesnjtJc0HaLQO7zi.jpeg" />
+            <div class="comment-main">
+                <div class="comment-title">周启明的评论</div>
+                <div class="comment-content">周启明的评论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论</div>
+                <div class="comment-footer">时间大幅地方撒旦撒发达f</div>
+            </div>
+        </div>
+        <div class="comment">
+            <img class="comment-img" src="http://pbsjqdbja.bkt.clouddn.com/gCXeesnjtJc0HaLQO7zi.jpeg" />
+            <div class="comment-main">
+                <div class="comment-title">周启明的评论</div>
+                <div class="comment-content">周启明的评论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论周启明的评论</div>
+                <div class="comment-footer">时间大幅地方撒旦撒发达f</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

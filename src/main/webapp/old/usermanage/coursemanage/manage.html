@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>课程信息</title>
+    <script src="../../../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../../../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <script src="../../../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../../commons/vue.js/vue.min.js"></script>
+    <script src="../../../js/main.js"></script>
+    <!-- ueditor -->
+    <script type="text/javascript" charset="utf-8" src="../../../commons/ueditor-1.4.3.3/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../../commons/ueditor-1.4.3.3/ueditor.all.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../../commons/ueditor-1.4.3.3/lang/zh-cn/zh-cn.js"></script>
+    <style>
+        .table tbody tr td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:20px;"></div>
+<div class="container" id="containerDiv">
+    <div class="row">
+        <div class="col-sm-9">
+            <div id="mainDiv">
+                <div class="card border-primary">
+                    <div class="card-header">
+                        请选择操作
+                    </div>
+                    <div class="card-body">
+                        <h1>请选择操作</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3" id="contentsDiv">
+            <div class="list-group-item disabled"> 课程概述</div>
+            <a href="javascript:void(0);" :class="{'list-group-item': true, 'active':courseInfoSelected}"
+               @click="loadCourseInfoPage">课程信息</a>
+            <a href="javascript:void(0);" :class="{'list-group-item': true, 'active':addContentSelected}"
+               @click="loadAddContentPage">添加章节</a>
+            <br/>
+
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a :class="{'nav-link':true, 'active':visLearing}" href="javascript:void(0);"
+                               @click="onLearningClick">课程</a>
+                        </li>
+                        <li class="nav-item">
+                            <a :class="{'nav-link':true, 'active':!visLearing}" href="javascript:void(0);"
+                               @click="onExamClick">测验</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <a href="javascript:void(0);"
+                       :class="{'list-group-item':true, 'active': content.selected, 'collapse': !visLearing}"
+                       v-for="content in learningContents" @click="onLearingItemClick(content.index)">
+                        {{content.index}}：{{content.name}}
+                    </a>
+                    <a href="javascript:void(0);"
+                       :class="{'list-group-item':true, 'active': content.selected, 'collapse': !visExam}"
+                       v-for="content in examContents" @click="onExamItemClick(content.index)">
+                        {{content.index}}：{{content.name}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var courseId = getQueryInt("courseId");
+    var learningContentId = -1;
+    var examContentId = -1;
+    var contentName = "";
+    var vmManage = new Vue({
+        el: "#contentsDiv",
+        data: {
+            courseInfoSelected: false,
+            addContentSelected: false,
+            visLearing: true,
+            visExam: false,
+            currentContents: [],
+            learningContents: [],
+            examContents: [],
+        },
+        methods: {
+            loadLearningContents: function () {
+                $.ajax({
+                    url: "../../learningcontents.action",
+                    type: "post",
+                    data: {courseId: courseId},
+                    success: function (data) {
+                        for (var i = 0; i < data.length; ++i) {
+                            data[i].selected = vmManage.learningContents[i] ? vmManage.learningContents[i].selected : false;
+                        }
+                        vmManage.learningContents = data;
+                    }
+                })
+            },
+            loadExamContents: function () {
+                $.ajax({
+                    url: "../../examcontents.action",
+                    type: "post",
+                    data: {courseId: courseId},
+                    success: function (data) {
+                        for (var i = 0; i < data.length; ++i) {
+                            data[i].selected = vmManage.examContents[i] ? vmManage.examContents[i].selected : false;
+                        }
+                        vmManage.examContents = data;
+                    }
+                })
+            },
+            onLearingItemClick: function (index) {
+                this.$options.methods.clearAllSelected();
+                this.learningContents[index - 1].selected = true;
+                Vue.set(this.learningContents, index - 1, this.learningContents[index - 1]);
+
+                learningContentId = this.learningContents[index - 1].learningContentId;
+                contentName = this.learningContents[index - 1].name;
+                $("#mainDiv").load("learningbody.html");
+            },
+            onExamItemClick: function (index) {
+                this.$options.methods.clearAllSelected();
+                this.examContents[index - 1].selected = true;
+                Vue.set(this.examContents, index - 1, this.examContents[index - 1]);
+
+                examContentId = this.examContents[index - 1].examContentId;
+                contentName = this.examContents[index - 1].name;
+                $("#mainDiv").load("exam.html");
+            },
+            loadCourseInfoPage: function () {
+                this.$options.methods.clearAllSelected();
+                this.courseInfoSelected = true;
+                $("#mainDiv").load("courseinfo.html");
+            },
+            loadAddContentPage: function () {
+                this.$options.methods.clearAllSelected();
+                this.addContentSelected = true;
+
+                $("#mainDiv").load("addcontent.html");
+            },
+            reload: function () {
+                this.$options.methods.loadLearningContents();
+                this.$options.methods.loadExamContents();
+            },
+            onLearningClick: function () {
+                this.visLearing = true;
+                this.visExam = false;
+            },
+            onExamClick: function () {
+                this.visExam = true;
+                this.visLearing = false;
+            },
+            clearAllSelected: function() {
+                vmManage.courseInfoSelected = false;
+                vmManage.addContentSelected = false;
+                vmManage.learningContents.map((v, i)  => {
+                    v.selected = false;
+                });
+                vmManage.examContents.map((v, i) => {
+                    v.selected = false;
+                });
+            }
+        }
+    });
+
+    vmManage.reload();
+
+    console.log("courseId: " + courseId);
+    var learningContentId = 0;
+    var examContentId = 0;
+    var contentName = "";
+    UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+    UE.Editor.prototype.getActionUrl = function (action) {
+        if (action == 'uploadimage' || action == 'uploadscrawl' || action == 'uploadimage') {
+            return '../../ueditorimageupload.action'; //在这里返回我们实际的上传图片地址
+        } else {
+            return this._bkGetActionUrl.call(this, action);
+        }
+    }
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name=”viewport” content=”width=device-width, initial-scale=1″/>
+    <title>南京邮电大学在线学习系统</title>
+    <script src="../commons/jquery-2.1.4/jquery-2.4.1.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js" type="text/javascript"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/tools.js"></script>
+    <style>
+        ul li {
+            list-style: none;
+            line-height: 27px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .tree-node-content {
+            height: 27px;
+            cursor: pointer;
+            padding: 2px;
+            line-height: 23px;
+        }
+
+        .tree-node-right {
+            height: 23px;
+            display: inline-block;
+        }
+
+        .tree-node-text {
+            font-size: 16px;
+            line-height: 23px;
+            display: inline-block;
+            min-width: 50px;
+            vertical-align: top;
+        }
+
+        .img-folder {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../img/folder.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-course {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../img/course.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-content {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../img/content.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-loading {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../img/loading.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-plus {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../img/plus.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-minus {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../img/minus.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-blank {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .tree-box {
+            height: calc(100vh - 290px);
+            min-height: 550px;
+            margin-top: 30px;
+            padding: 10px 10px 10px 0;
+            overflow-x: auto;
+            overflow-y: scroll;
+            background-color: rgba(203, 221, 235, 0.12);
+            float: left;
+            width: 500px;
+        }
+
+        .selected {
+            background-color: #d9d9d9;
+        }
+
+        .right-info {
+            width: 650px;
+            float: right;
+            margin-top: 30px;
+        }
+
+        .info-caption {
+            height: 50px;
+        }
+
+        .info-caption-img-course {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../img/course.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-caption-img-folder {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../img/folder.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-caption-img-content {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../img/content.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-caption-img-loading {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../img/loading.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-text {
+            height: 50px;
+            line-height: 50px;
+            display: inline-block;
+            position: relative;
+            text-align: justify;
+            font-size: 30px;
+            margin-left: 20px;
+            vertical-align: top;
+            overflow: hidden;
+        }
+
+        .info-category, .info-line {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 17px;
+        }
+
+        .info-description {
+            margin-top: 20px;
+            min-height: 100px;
+            max-height: 200px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            background-color: #fdfdfd;
+            font-size: 16.5px;
+        }
+
+        hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-top: 1px #eee solid;
+        }
+
+        button {
+            height: 40px;
+            border: none;
+            background-color: #000097;
+            color: white;
+            width: 200px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            height: 40px;
+            border: none;
+            background-color: gray;
+            color: white;
+            width: 200px;
+        }
+
+        button:active {
+            height: 40px;
+            border: none;
+            background-color: #0000d8;
+            color: white;
+            width: 200px;
+        }
+    </style>
+
+    <template id="treeNodeTemplate">
+        <li>
+            <div class="tree-node-content">
+                <span class="img-minus" v-if="value.open && !value.isLeaf" @click="toggle($event)"></span>
+                <span class="img-plus" v-if="!value.open && !value.isLeaf" @click="toggle($event)"></span>
+                <span class="img-blank" v-if="value.isLeaf"></span>
+                <div @click="click($event)" :class="{'selected': selectedValue == value, 'tree-node-right':true}">
+                    <span class="img-folder" v-if="value.type == 'category'"></span>
+                    <span class="img-course" v-if="value.type == 'course'"></span>
+                    <span class="img-content" v-if="value.type == 'content'"></span>
+                    <span class="img-loading" v-if="value.type == 'loading'"></span>
+                    <span class="tree-node-text">{{value.name}}</span>
+
+                </div>
+            </div>
+            <ul v-show="value.open">
+                <tree-node v-for="node in value.children" v-model="node"></tree-node>
+            </ul>
+        </li>
+    </template>
+    <script>
+        var treeNodeBus = new Vue({
+            data: {
+                selectedValue: null
+            }
+        });
+        var treeNode = Vue.extend({
+            name: "treeNode",
+            template: "#treeNodeTemplate",
+            props: {
+                value: Object
+            },
+            data() {
+                return {
+                    selectedValue: 0
+                }
+            },
+            methods: {
+                toggle: function (event) {
+                    if (!this.value.isLeaf) {
+                        this.value.open = !this.value.open;
+                        if (this.value.open) {
+                            treeNodeBus.$emit("open", this.value, event);
+                        }
+                    } else {
+                        console.log("叶子节点不能点击");
+                    }
+                },
+                click: function (event) {
+                    if (this.value.isLeaf) {
+                        treeNodeBus.$emit("leafClick", this.value);
+                    }
+                    // alert("chishi");
+                    treeNodeBus.selectedValue = this.value;
+                    treeNodeBus.$emit("click", this.value);
+                    //  this.selectedValue = this.value;
+                }
+            },
+            created() {
+                var vm = this;
+                treeNodeBus.$on("click", function (data) {
+                    vm.selectedValue = treeNodeBus.selectedValue;
+                    //        alert("abc");
+                });
+            }
+        });
+
+    </script>
+
+</head>
+<body>
+
+<!-- top 导航 -->
+<div id="header">
+    <script>
+        $(function () {
+            $("#header").load("../commonpages/header.html");
+        })
+    </script>
+</div>
+<div class="main-body" id="tree">
+    <div class="wrap">
+        <div class="tree-box">
+            <ul>
+                <tree-node v-model="node" v-for="node in nodes"></tree-node>
+            </ul>
+        </div>
+        <div class="right-info">
+            <div class="info-caption" v-show="selectedNode.type != ''">
+                <div :class="{'info-caption-img-folder':selectedNode.type=='category','info-caption-img-course':selectedNode.type=='course','info-caption-img-content': selectedNode.type== 'content', 'info-caption-img-loading': selectedNode.type == 'loading'}"></div>
+                <span class="info-text">{{selectedNode.name}}</span>
+                <div class="info-category" v-show="selectedNode.type != ''">
+                    种类：{{selectedNode.type=="category"?"目录":selectedNode.type=="course"?"课程":selectedNode.type=="content"?"章节":"加载中"}}
+                </div>
+                <div class="info-description" v-show="selectedNode.type != ''">
+                    {{selectedNode.description == '' || selectedNode.description == undefined ? "改节点没有说明" : "说明：" + selectedNode.description}}
+                </div>
+                <hr v-show="selectedNode.type == 'course' || selectedNode.type == 'content'"/>
+                <div class="info-line" v-show="selectedNode.type == 'course' || selectedNode.type == 'content'">
+                    课程教师：{{selectedNode.nickname}}
+                </div>
+                <div class="info-line" v-show="selectedNode.type == 'course' || selectedNode.type == 'content'">
+                    难度：{{selectedNode.level}}
+                </div>
+                <div class="info-line" style="color:red;" v-show="selectedNode.type == 'course' && !selectedNode.isObtained">
+                    对不起，您不能学习这门课程，请点击查看并输入这门课的密码
+                </div>
+                <div class="info-line" v-show="selectedNode.type=='content'">
+                    课程名称：{{selectedNode.courseName}}
+                </div>
+                <button @click="jumpToPage(selectedNode)" v-show="selectedNode.type == 'course' || selectedNode.type == 'content' && selectedNode.isLeaf">
+                    查 &nbsp; 看
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <script>
+        $(function () {
+            $("#footer").load("/onlinelearning/commonpages/footer.html");
+        })
+    </script>
+</div>
+
+<script>
+    var vmTree = new Vue({
+        el: "#tree",
+        data: {
+            nodes: [],
+            selectedNode: {
+                type: ""
+            }
+        },
+        components: {
+            "treeNode": treeNode
+        },
+        methods: {
+            load: function () {
+                $.ajax({
+                    url: "../tree/root.action",
+                    success: function (data) {
+                        for (var i = 0; i < data.length; ++i) {
+                            data[i].parent = null;
+                            data[i].open = false;
+                        }
+                        vmTree.nodes = data;
+                    }
+                })
+            },
+            loadChildren: function (val) {
+                var type = val.type;
+                val.type = "loading";
+                console.log(val);
+                $.ajax({
+                    url: "../tree/children.action",
+                    data: {id: val.id, type: type},
+                    success: function (data) {
+                        for (var i = 0; i < data.length; ++i) {
+                            data[i].parent = val;
+                            data[i].open = false;
+                        }
+                        val.children = data;
+                        Vue.set(val, val.children, val.children);
+                        val.type = type;
+                    }
+                });
+            },
+            jumpToPage(node) {
+                switch (node.type) {
+                    case "course":
+                        window.location.href = "../course/info.html?courseId=" + node.id;
+                        break;
+                    case "content":
+                        window.location.href =
+                            "../course/content.html?contentId=" +
+                            node.id +
+                            "&courseId=" + node.courseId;
+                        break;
+                }
+            }
+        },
+        created() {
+            var vm = this;
+            treeNodeBus.$on("open", function (data) {
+                vm.loadChildren(data);
+            });
+            treeNodeBus.$on("leafClick", function (data) {
+                return;
+                switch (data.type) {
+                    case "category":
+                        alert("类别暂时无法访问");
+                        break;
+                    case "course":
+                        window.location.href = "../course/info.html?courseId=" + data.id;
+                        break;
+                    case "content":
+                        var courseId = -1;
+                        var parent = data.parent;
+                        while (parent != null) {
+                            if (parent.type == "course") {
+                                courseId = parent.id;
+                                break;
+                            } else {
+                                parent = parent.parent;
+                            }
+                        }
+                        window.location.href =
+                            "../course/content.html?contentId=" +
+                            data.id +
+                            "&courseId=" + courseId;
+                        break;
+                }
+            });
+            treeNodeBus.$on("click", function (data) {
+                vmTree.selectedNode = data;
+            });
+        }
+    });
+
+    vmTree.load();
+</script>
+</div>
+
+</body>
+</html>
+

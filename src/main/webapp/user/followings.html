@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="f-main clearfix">
+    <div class="setting-left" id="leftNav">
+        <script>
+            $(function () {
+                $("#leftNav").load("nav.html", null, function () {
+                    vmUserNav.index = 4;
+                });
+            });
+        </script>
+    </div>
+
+    <div class="setting-right" id="followings">
+        <div><span class="f-16">我的关注</span></div>
+        <div class="split-line" style="margin: 20px 0px;"></div>
+
+        <div class="comment clearfix" v-for="following in followings">
+            <div class="comment-header">
+                <img class="lecturer-uimg" :src="following.headImageUrl">
+            </div>
+
+            <div class="comment-main" style="width: 840px;">
+                <div class="user-name">{{following.nickname}} <span style="color: red"> &nbsp; 查看 / 更新了</span></div>
+                <div class="comment-content">
+                    <div>
+                        <a href="javascript:void(0);" class="link-a" style="font-weight:bold;"
+                           @click="jumpToCoursePage(record.courseId)">
+                            {{following.courseName}}
+                        </a>
+                    </div>
+                    <div style="margin-top:3px;">
+                        <div href="javascript:void(0);" class="link-a" style="overflow:hidden;"
+                             @click="jumpToContentPage(record.courseId, record.contentId)">
+                            {{following.description}}
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-footer">
+                    <a href="javascript:void(0);" style="margin-left:0px" @click="unfollow(following.id)">
+                        <span class=" unfollow-btn" style="margin-left: 0px;">取消关注</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="page-box">
+            <div class="page clearfix">
+                <div style="float:left;">
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(1)">首 页</a>
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(page.pageIndex - 1)">上一页</a>
+
+                    <a href="javascript:void(0);"
+                       :class="{'page-cur':dot == page.pageIndex, 'page-num': true}" v-for="dot in page.dots"
+                       @click="loadPage(dot)">{{dot}}</a>
+
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(page.pageIndex + 1)">下一页</a>
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(page.pageTotalCount)">
+                        尾 页
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+
+    var vmFollowings = new Vue({
+        el: "#followings",
+        data: {
+            followings: [],
+            page: {
+                pageIndex: 1,
+                pageSize: 3
+            }
+        },
+        methods: {
+            load: function () {
+                vmFollowings.loadPage(1);
+            },
+            loadPage: function (index) {
+                vmFollowings.page.pageIndex = index;
+                $.ajax({
+                    type: "post",
+                    url: "../follow/followingsPage.action",
+                    data: {
+                        pageIndex: vmFollowings.page.pageIndex,
+                        pageSize: vmFollowings.page.pageSize
+                    },
+                    success: function (data) {
+                        vmFollowings.page = data;
+                        vmFollowings.followings = data.items;
+                    }
+                });
+            },
+            unfollow: function(userId) {
+                if (!confirm("您这的要取消关注他/她吗？")) {
+                    return;
+                }
+                $.ajax({
+                    url: "../follow/swapFollow.action",
+                    data: {
+                        followUserId: userId
+                    },
+                    success: function() {
+                        vmFollowings.loadPage(1);
+                    }
+                });
+            }
+        }
+    });
+
+    vmFollowings.load();
+</script>
+</body>
+
+</html>

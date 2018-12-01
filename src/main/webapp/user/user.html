@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <script src="../commons/popper.js/popper.min.js"></script>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+    <style>
+        .title {
+            color: #5fb740;
+            font-size: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            background: #74cd55;
+            margin-right: 11px;
+            vertical-align: -3px;
+            width: 8px;
+            height: 20px;
+            color: #5fb740;
+        }
+    </style>
+</head>
+
+<body>
+<div id="header" style="min-height:51px; margin-bottom:40px;"></div>
+<div class="f-main clearfix">
+    <div class="setting-left" id="leftNav">
+        <script>
+            $(function () {
+                $("#leftNav").load("nav.html", null, function () {
+                    vmUserNav.index = 0;
+                });
+            });
+        </script>
+    </div>
+
+    <div class="setting-right" id="user">
+        <div><span class="f-16">最新动态</span></div>
+        <div class="split-line" style="margin: 20px 0px;"></div>
+
+        <div class="comment clearfix" v-for="record in studyRecordPage.items">
+            <div class="comment-header">
+                <img class="lecturer-uimg" :src="record.headImageUrl">
+            </div>
+
+            <div class="comment-main" style="width: 840px;">
+                <div class="user-name">{{record.nickname}} <span style="color: red"> &nbsp; 查看 / 更新了</span></div>
+                <div class="comment-content">
+                    <div>
+                        <a href="javascript:void(0);" class="link-a" style="font-weight:bold;"
+                           @click="jumpToCoursePage(record.courseId)">
+                            {{record.courseName}}
+                        </a>
+                    </div>
+                    <div style="margin-top:3px;">
+                        <a href="javascript:void(0);" class="link-a"
+                           @click="jumpToContentPage(record.courseId, record.contentId)">
+                            {{record.contentName}}
+                        </a>
+                    </div>
+                </div>
+                <div class="comment-footer">时间：{{record.updateTime}}</div>
+            </div>
+        </div>
+        <div class="page-box clearfix">
+            <div class="page clearfix">
+                <div style="float:left;">
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(1)">首 页</a>
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(studyRecordPage.pageIndex - 1)">上一页</a>
+
+                    <a href="javascript:void(0);" v-for="dot in studyRecordPage.dots"
+                       :class="{'page-cur':dot == studyRecordPage.pageIndex, 'page-num': dot != studyRecordPage.pageIndex}"
+                       @click="loadPage(dot)">{{dot}}</a>
+
+                    <a class="page-next" href="javascript:void(0);"
+                       @click="loadPage(studyRecordPage.pageIndex + 1)">下一页</a>
+                    <a class="page-next" href="javascript:void(0);" @click="loadPage(studyRecordPage.pageTotalCount)">尾
+                        页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.user-menu-nav').hover(function () {
+            $(this).find('span').css('color', '#0089D2');
+        }, function () {
+            $(this).find('span').css('color', '#777');
+        });
+
+        var headPhoto = $('#userNavHeader').attr('src');
+        if (headPhoto == null || headPhoto == '' || headPhoto == 'null') {
+            var headPhoto = "${s.base}/res/i/header.jpg";
+            $('#userNavHeader').attr('src', headPhoto);
+        }
+    });
+
+
+    var vmUser = new Vue({
+        el: "#user",
+        data: {
+            studyRecords: [],
+            studyRecordPage: {
+                pageIndex: 0,
+                pageSize: 3
+            },
+        },
+        methods: {
+            load: function () {
+                vmUser.studyRecordPage.pageSize = getQueryInt("pageSize");
+                if (vmUser.studyRecordPage.pageSize == -1) {
+                    vmUser.studyRecordPage.pageSize = 3;
+                }
+                vmUser.loadPage(1);
+            },
+            jumpToCoursePage(courseId) {
+                window.location.href = "../course/info.html?courseId=" + courseId;
+            },
+            jumpToContentPage(courseId, contentId) {
+                window.location.href = "../course/content.html?courseId=" + courseId + "&contentId=" + contentId;
+            },
+            loadPage: function (pageIndex) {
+                if (pageIndex < 1 || pageIndex > vmUser.studyRecordPage.pageTotalCount) {
+                    return;
+                }
+                vmUser.studyRecordPage.pageIndex = pageIndex;
+                $.ajax({
+                    url: "../follow/studyRecordsPage.action",
+                    data: {
+                        pageIndex: vmUser.studyRecordPage.pageIndex,
+                        pageSize: vmUser.studyRecordPage.pageSize
+                    },
+                    success: function (data) {
+                        vmUser.studyRecordPage = data;
+                    }
+                });
+            }
+        }
+    });
+
+    vmUser.load();
+</script>
+</body>
+
+</html>

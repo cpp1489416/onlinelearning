@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台管理</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../../commons/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../css/mstyle.css" rel="stylesheet"/>
+    <script src="../../commons/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../commons/vue.js/vue.min.js"></script>
+    <script src="../../js/tools.js"></script>
+    <link href="../../css/reset.css" rel="stylesheet"/>
+    <style>
+        .half-width {
+            width: 50%;
+            box-sizing: border-box;
+            float: left;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .block-row {
+            overflow: hidden;
+            margin: 0px -10px;
+            box-sizing: border-box;
+        }
+
+        .table-line {
+            cursor: pointer;
+        }
+
+        .table-line:hover {
+
+            background-color: #adadad;
+        }
+
+        .table-line.checked {
+            background-color: #d9d9d9;
+        }
+    </style>
+
+    <style>
+        ul li {
+            list-style: none;
+            line-height: 27px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .tree-node-content {
+            height: 27px;
+            cursor: pointer;
+            padding: 2px;
+            line-height: 23px;
+        }
+
+        .tree-node-right {
+            height: 23px;
+            display: inline-block;
+        }
+
+        .tree-node-text {
+            font-size: 16px;
+            line-height: 23px;
+            display: inline-block;
+            min-width: 50px;
+            vertical-align: top;
+        }
+
+        .img-folder {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../../img/folder.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-course {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../../img/course.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-content {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../../img/content.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-loading {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../../img/loading.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-plus {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../../img/plus.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-minus {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            background: url("../../img/minus.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .img-blank {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .tree-box {
+            height: calc(100vh - 290px);
+            min-height: 550px;
+            padding: 10px 10px 10px 0;
+            overflow-x: auto;
+            overflow-y: scroll;
+            background-color: rgba(203, 221, 235, 0.12);
+            float: left;
+            width: 500px;
+        }
+
+        .selected {
+            background-color: #d9d9d9;
+        }
+
+        .right-info {
+            margin-top: 30px;
+            overflow: visible;
+        }
+
+        .info-caption {
+            height: 50px;
+        }
+
+        .info-caption-img-course {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../../img/course.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-caption-img-folder {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../../img/folder.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-caption-img-content {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../../img/content.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-caption-img-loading {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background: url("../../img/loading.png") no-repeat 0px 0px;
+            -webkit-background-size: 100% 100%;
+            background-size: 100% 100%;
+        }
+
+        .info-text {
+            height: 50px;
+            line-height: 50px;
+            width: 350px;
+            display: inline-block;
+            position: relative;
+            text-align: justify;
+            font-size: 30px;
+            margin-left: 20px;
+            vertical-align: top;
+        }
+
+        .info-category, .info-line {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 17px;
+        }
+
+        .info-description {
+            margin-top: 20px;
+            min-height: 100px;
+            max-height: 200px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            background-color: #fdfdfd;
+            font-size: 16.5px;
+        }
+
+        hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-top: 1px #eee solid;
+        }
+
+        .i-button {
+            display: block;
+            margin-bottom: 10px;
+            height: 40px;
+            border: none;
+            background-color: #000097;
+            color: white;
+            width: 200px;
+            font-size: 16px;
+        }
+
+        .i-button.danger {
+            background-color: #910000;
+        }
+
+        .i-button:hover {
+            height: 40px;
+            border: none;
+            background-color: gray;
+            color: white;
+            width: 200px;
+        }
+
+        .i-button:active.danger {
+            background-color: #ce0000;
+        }
+
+        .i-button:active {
+            height: 40px;
+            border: none;
+            background-color: #0000d8;
+            color: white;
+            width: 200px;
+        }
+
+
+    </style>
+
+
+    <template id="treeNodeTemplate">
+        <li>
+            <div class="tree-node-content">
+                <span class="img-minus" v-if="open && !value.isLeaf" @click="toggle($event)"></span>
+                <span class="img-plus" v-if="!open && !value.isLeaf" @click="toggle($event)"></span>
+                <span class="img-blank" v-if="value.isLeaf"></span>
+                <div @click="click($event)" :class="{'selected': selectedValue == value, 'tree-node-right':true}">
+                    <span class="img-folder" v-if="value.type == 'category'"></span>
+                    <span class="img-course" v-if="value.type == 'course'"></span>
+                    <span class="img-content" v-if="value.type == 'content'"></span>
+                    <span class="img-loading" v-if="value.type == 'loading'"></span>
+                    <span class="tree-node-text">{{value.name}}</span>
+
+                </div>
+            </div>
+            <ul v-if="isShow()">
+                <tree-node v-for="node in value.children" v-model="node"></tree-node>
+            </ul>
+        </li>
+    </template>
+    <script>
+        var treeNodeBus = new Vue({
+            data: {
+                selectedValue: null
+            }
+        });
+        var treeNode = Vue.extend({
+            name: "treeNode",
+            template: "#treeNodeTemplate",
+            props: {
+                value: Object
+            },
+            data() {
+                return {
+                    selectedValue: 0,
+                    open: false
+                }
+            },
+            methods: {
+                toggle: function (event) {
+                    if (!this.value.isLeaf) {
+                        console.log("dd");
+                        if (this.value.open) {
+                            treeNodeBus.$emit("open", this.value, event);
+                        }
+                        this.open = !this.open;
+                    } else {
+                        console.log("叶子节点不能点击");
+                    }
+                },
+                click: function (event) {
+                    if (this.value.isLeaf) {
+                        treeNodeBus.$emit("leafClick", this.value);
+                    }
+                    treeNodeBus.selectedValue = this.value;
+                    treeNodeBus.$emit("click", this.value);
+                },
+                isShow: function () {
+                    return this.open;
+                }
+            },
+            created() {
+                var vm = this;
+                treeNodeBus.$on("click", function (data) {
+                    vm.selectedValue = treeNodeBus.selectedValue;
+                });
+            },
+        });
+
+    </script>
+
+    <style>
+    </style>
+
+</head>
+
+<body class="">
+<!-- top 导航 -->
+<div id="header">
+    <script>
+        $(function () {
+            $("#header").load("../../commonpages/header.html");
+        })
+    </script>
+</div>
+<!-- 菜单导航 -->
+<div id="nav">
+    <script>
+        $(function () {
+            $("#nav").load("../nav.html", null, function () {
+                vmMNav.index = 4;
+            });
+        })
+    </script>
+</div>
+<div class="content" id="category">
+    <div class="container-fluid">
+        <div class="mt-15" onsubmit="return false">
+            <div class="block span6">
+                <a class="block-heading f-14" data-toggle="collapse">分类管理</a>
+            </div>
+
+            <div class="block-row">
+                <div class=" half-width">
+                    <div class="block tree-box" style="height: 500px;">
+                        <ul>
+                            <tree-node v-model="node" v-for="node in nodes"></tree-node>
+                        </ul>
+                    </div>
+
+                </div>
+                <div class=" half-width">
+
+                    <div class="right-info">
+                        <div class="info-caption" v-show="selectedNode.id != 0">
+                            <div :class="{'info-caption-img-folder':selectedNode.type=='category','info-caption-img-course':selectedNode.type=='course','info-caption-img-content': selectedNode.type== 'content', 'info-caption-img-loading': selectedNode.type == 'loading'}"></div>
+                            <span class="info-text">{{selectedNode.name}}</span>
+                            <div class="info-category" v-show="selectedNode.type != ''">
+                                种类：{{selectedNode.type=="category"?"目录":selectedNode.type=="course"?"课程":selectedNode.type=="content"?"章节":"加载中"}}
+                            </div>
+                            <div class="info-description" v-show="selectedNode.type != ''">
+                                {{selectedNode.description == '' || selectedNode.description == undefined ? "改节点没有说明" :
+                                "说明：" + selectedNode.description}}
+                            </div>
+                            <hr v-show="selectedNode.type == 'course' || selectedNode.type == 'content'"/>
+                            <div class="info-line"
+                                 v-show="selectedNode.type == 'course' || selectedNode.type == 'content'">
+                                课程教师：{{selectedNode.nickname}}
+                            </div>
+                            <div class="info-line"
+                                 v-show="selectedNode.type == 'course' || selectedNode.type == 'content'">
+                                难度：{{selectedNode.level}}
+                            </div>
+                            <div class="info-line" v-show="selectedNode.type=='content'">
+                                课程名称：{{selectedNode.courseName}}
+                            </div>
+                            <button class="i-button" @click="showModifyCategoryModal">编辑</button>
+                            <button class="i-button" @click="showAddCategoryModal">添加子分类</button>
+                            <button class="i-button danger" @click="removeCategory">删除</button>
+                        </div>
+
+                        <button class="i-button" @click="showAddCategoryModal" v-show="selectedNode.id == 0">添加大分类</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- 弹出层 -start -->
+    <div class="modal" id="addCategoryModal" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal_wapper">
+            <div class="modal-dialog w-8">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">为{{selectedNode.name}}添加子分类</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group clearfix">
+                            <label class="control-label">名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" v-model="newCategory.name" placeholder="请输入名称">
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="control-label">说明</label>
+                            <div class="col-sm-10">
+                                <textarea name="brief" rows="2" cols="60" v-model="newCategory.description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="addCategory">添加分类</button>
+                        <button type="button" class="btn btn-default" onclick="$('#addCategoryModal').modal('hide')">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="modifyCategoryModal" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal_wapper">
+            <div class="modal-dialog w-8">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">修改分类</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group clearfix">
+                            <label class="control-label">名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" v-model="modifiedCategory.name"
+                                       placeholder="请输入名称">
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <label class="control-label">说明</label>
+                            <div class="col-sm-10">
+                                <textarea name="brief" rows="2" cols="60"
+                                          v-model="modifiedCategory.description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="modifyCategory">修改分类</button>
+                        <button type="button" class="btn btn-default" onclick="$('#modifyCategoryModal').modal('hide')">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 弹出层 -end -->
+
+</div>
+
+
+<script>
+    var vmCategory = new Vue({
+        el: "#category",
+        data: {
+            categories: [],
+            selectedBigCategory: {
+                categories: []
+            },
+            newCategory: {
+                name: "",
+                description: "",
+                parentId: 0
+            },
+            modifiedCategory: {
+                id: 0,
+                name: "",
+                description: ""
+            },
+            nodes: [],
+            selectedNode: {
+                id: 0
+            }
+        },
+        methods: {
+            load: function () {
+                var vm = this;
+                $.ajax({
+                    url: "../../category/categories.action",
+                    type: "post",
+                    success: function (data) {
+                        for (var i = 0; i < data.length; ++i) {
+                            data[i].checked = false;
+                        }
+                        vmCategory.categories = data;
+                        vmCategory.categories.splice(data.length);
+                        for (var i = 0; i < data.length; ++i) {
+                            Vue.set(vmCategory.categories, i, vmCategory.categories[i]);
+                        }
+                        vmCategory.selectedBigCategory = {};
+                    }
+                });
+                vm.loadTree();
+            },
+            selectBigCategory: function (category) {
+                for (var i = 0; i < this.categories.length; ++i) {
+                    this.categories[i].checked = false;
+                }
+                category.checked = true;
+                this.selectedBigCategory = category;
+            },
+            removeCategory: function () {
+                if (!confirm("是否删除？")) {
+                    return;
+                }
+                var id = vmCategory.selectedNode.id;
+                $.ajax({
+                    url: "../../category/removeCategory.action",
+                    type: "post",
+                    data: {
+                        id: id
+                    },
+                    success: function (data) {
+                        vmCategory.load();
+                        //   Vue.set(vmCategory, vmCategory.categories, vmCategory.categories);
+                    }
+                })
+            },
+            addCategory: function () {
+                vmCategory.newCategory.parentId = vmCategory.selectedNode.id;
+                $.ajax({
+                    url: "../../category/addCategory.action",
+                    type: "post",
+                    data: {
+                        name: vmCategory.newCategory.name,
+                        description: vmCategory.newCategory.description,
+                        parentId: vmCategory.newCategory.parentId
+                    },
+                    success: function () {
+                        $("#addCategoryModal").modal("hide");
+                        vmCategory.selectedBigCategory = null;
+                        vmCategory.load();
+                    }
+                });
+            },
+            showAddCategoryModal: function (category) {
+                $("#addCategoryModal").modal("show");
+            },
+            showModifyCategoryModal: function (category) {
+                vmCategory.modifiedCategory.id = this.selectedNode.id;
+                vmCategory.modifiedCategory.description = this.selectedNode.description;
+                vmCategory.modifiedCategory.name = this.selectedNode.name;
+                $("#modifyCategoryModal").modal("show");
+            },
+            modifyCategory: function () {
+                $.ajax({
+                    url: "../../category/modifyCategory.action",
+                    type: "post",
+                    data: {
+                        id: vmCategory.modifiedCategory.id,
+                        name: vmCategory.modifiedCategory.name,
+                        description: vmCategory.modifiedCategory.description,
+                    },
+                    success: function (data) {
+                        if (data.status != "success") {
+                            alert("修改失败");
+                            return;
+                        }
+                        vmCategory.selectedNode.name = vmCategory.modifiedCategory.name;
+                        vmCategory.selectedNode.description = vmCategory.modifiedCategory.description;
+                        $("#modifyCategoryModal").modal("hide");
+                    }
+                });
+            },
+            loadTree: function () {
+                $.ajax({
+                    url: "../../tree/categories.action",
+                    success: function (data) {
+                        for (var i = 0; i < data.length; ++i) {
+                            data[i].parent = null;
+                            data[i].open = false;
+                        }
+                        vmCategory.nodes = data;
+                        vmCategory.selectedNode = data[0];
+                    }
+                });
+            }
+        },
+        created() {
+            var vm = this;
+            vm.load();
+            treeNodeBus.$on("click", function (data) {
+                vm.selectedNode = data;
+            })
+        },
+        components: {
+            "treeNode": treeNode
+        },
+    });
+
+</script>
+</body>
+</html>

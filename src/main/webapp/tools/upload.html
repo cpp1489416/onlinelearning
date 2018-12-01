@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传工具</title>
+    <script src="../commons/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link href="../commons/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet"/>
+    <link href="../css/reset.css" rel="stylesheet"/>
+    <script src="../commons/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../commons/vue.js/vue.min.js"></script>
+    <script src="../js/main.js"></script>
+</head>
+<body>
+<div id="upload">
+    <div id="header" style="min-height:51px; margin-bottom:20px;"></div>
+    <img alt="图片找不到了或不是图片文件" :src="out.url" class="rounded-circle"
+         style="width:60px !important;height:60px !important;"/>
+    <input class="form-control-file" id="upfile" type="file" @change="upload"/>
+    <div>
+        您的url： {{out.url}}
+    </div>
+</div>
+
+<script>
+    var vmUpload = new Vue({
+        el: "#upload",
+        data: {
+            out: {}
+        },
+        methods: {
+            upload: function () {
+                var formFile = new FormData();
+                formFile.append("upfile", document.getElementById("upfile").files[0]);
+                $.ajax({
+                    type: "post",
+                    url: "../upload/upload.action",
+                    data: formFile,
+                    cache: false, // 文件不需要缓存
+                    processData: false, // processData 指对参数进行序列化处理 ，一定是false！！
+                    contentType: false, // 一定是false
+                    success: function(data) {
+                        vmUpload.out = data;
+                    }
+                });
+            }
+        }
+    });
+
+
+</script>
+</body>
+</html>

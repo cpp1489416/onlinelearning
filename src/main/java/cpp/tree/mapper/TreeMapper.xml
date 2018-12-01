@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cpp.tree.mapper.TreeMapper">
+    <select id="listRootCategories" resultType="cpp.tree.po.TreeNode">
+        select id id, name name, description description, "category" `type` from course_category where parentId = 0
+    </select>
+
+    <select id="listCategoriesByCategoryNode" parameterType="cpp.tree.po.TreeNode" resultType="cpp.tree.po.TreeNode">
+        select *, "category" type from course_category where parentId = #{id} order by sort
+    </select>
+
+    <select id="listCoursesByCategoryNode" parameterType="cpp.tree.po.TreeNode" resultType="cpp.tree.po.CourseTreeNode">
+       select *, "course" `type`, user.id userId, user.nickname nickname
+        from course inner join user on user.id = course.userId
+        where categoryId = #{id} order by updateTime desc
+    </select>
+
+    <select id="listContentsByCourseNode" parameterType="cpp.tree.po.TreeNode" resultType="cpp.tree.po.ContentTreeNode">
+        select
+            course_content.id id, course_content.name name, "content" `type`,
+            course.id courseId, course.name courseName, course.level `level`,
+            user.nickname nickname
+        from course_content
+            inner join course on course_content.courseId = course.id
+            inner join user on course.userId = user.id
+        where courseId = #{id} and parentId = 0 order by sort
+    </select>
+
+    <select id="listContentsByContentNode" parameterType="cpp.tree.po.TreeNode"
+            resultType="cpp.tree.po.ContentTreeNode">
+        select
+            course_content.id id, course_content.name name, "content" `type`,
+            course.id courseId, course.name courseName, course.level `level`,
+            user.nickname nickname
+        from course_content
+            inner join course on course_content.courseId = course.id
+            inner join user on course.userId = user.id
+        where parentId = #{id} order by sort
+    </select>
+
+</mapper>

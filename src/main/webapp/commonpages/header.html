@@ -1,0 +1,273 @@
+<div class="header" id="header">
+    <style>
+    </style>
+    <div class="header-box">
+        <nav class="header-nav">
+            <a href="/onlinelearning/index.html" class="header-nav-item"
+               style="width:auto;"><strong>在线学习系统</strong></a>
+            <a href="/onlinelearning/index.html" class="header-nav-item">课 程</a>
+            <a href="/onlinelearning/view/tree.html" class="header-nav-item">学习资源树</a>
+            <a href="/onlinelearning/user/user.html" class="header-nav-item">个人中心</a>
+            <a href="/onlinelearning/m/index.html" style="width:100px;" class="header-nav-item">后台管理</a>
+        </nav>
+
+        <div class="header-nav" style="float:right">
+            <img v-show="loggedIn" :src="user.headImageUrl" class="header-image" @click="jumpToUserPage"/>
+            <div class="header-user-name" v-show="loggedIn">
+                {{user.nickname}} ▼
+                <div class="header-user-name-content" @click="logout">
+                    注销
+                </div>
+            </div>
+
+            <a class="header-nav-item" href="javascript:void(0);" v-show="!loggedIn" @click="showRegistModal">注册</a>
+            <a class="header-nav-item" href="javascript:void(0);" v-show="!loggedIn" @click="showLoginModal">登录</a>
+        </div>
+
+    <div class="modal" id="loginModal" tabindex="-1" role="dialog" aria-labelledy="myLabelLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel"> 登陆 </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="form-group row">
+                            <div class="col-sm-offset-2 col-sm-4">
+                                <span id="loginErrorTip" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="usernamel" class="col-sm-2 col-form-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="username" id="usernamel"
+                                       placeholder="请输入用户名" required/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="passwordl" class="col-sm-2 col-form-label">密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="passwordl" name="password"
+                                       placeholder="请输入密码" required/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="login">登陆</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="registModal" tabindex="-1" role="dialog" aria-labelledy="myLabelLabelr"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabelr"> 注册 </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="registForm" class="form" role="form" action="#" onsubmit="return false">
+                        <div class="form-group row">
+                            <label for="usernamer" class="col-sm-2 col-form-label">用户名</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="usernamer" name="username"
+                                       placeholder="请输入用户名" required/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nicknamer" class="col-sm-2 col-form-label">昵称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="nicknamer" name="nickname"
+                                       placeholder="请输入昵称" required/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="passwordr" class="col-sm-2 col-form-label">新的密码</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="passwordr" name="password"
+                                       placeholder="请输入密码" @keyup="checkPassword" required v-model="regist.password"/>
+                            </div>
+                        </div>
+                        <div class="form-group row has-success" id="password2rDiv">
+                            <label for="password2r" class="col-sm-2 col-form-label">确认密码</label>
+                            <div class="col-sm-10">
+                                <input type="text" :class="{'form-control':true, 'is-invalid':!regist.isValidPassword}"
+                                       id="password2r" name="password2" placeholder="请输入确认密码" @keyup="checkPassword"
+                                       required v-model="regist.password2"/>
+                                <div class="invalid-feedback" v-show="!regist.isValidPassword">前后密码不一致</div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">性别</label>
+                            <label class="col-form-label col-sm-2">
+                                <input type="radio" class="form-check-input" name="sex" id="sexMaler" value="男"
+                                       checked/> 男
+                            </label>
+                            <label class="col-form-label col-sm-1">
+                                <input type="radio" class="form-check-input" name="sex" id="sexFemaler" value="女"/> 女
+                            </label>
+                        </div>
+                        <div class="form-group row">
+                            <label for="ager" class="col-sm-2 col-form-label">年龄</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="age" id="ager" placeholder="请输入年龄"
+                                       required/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="descriptionr" class="col-sm-2 col-form-label">个人描述</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" rows="3" name="description" id="descriptionr"
+                                          placeholder="请输入个人描述"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="register">注册</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    var vmHeader = new Vue({
+        el: "#header",
+        data: {
+            loggedIn: true,
+            nickname: "吃屎",
+            imageSrc: "",
+            user: {},
+            regist: {
+                password: "",
+                password2: "",
+                isValidPassword: true
+            },
+            funcs: []
+        },
+        methods: {
+            checkUser: function () {
+                $.ajax({
+                    type: "post",
+                    cache: false,
+                    url: "/onlinelearning/user/user.action",
+                    success: function (data) {
+                        if (data == null || data == "") {
+                            vmHeader.loggedIn = false;
+                            vmHeader.user = {};
+                        } else {
+                            vmHeader.user = data;
+                            vmHeader.loggedIn = true;
+                        }
+                        for (var i = 0; i < vmHeader.funcs.length; ++i) {
+                            vmHeader.funcs[i]();
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            showLoginModal: function () {
+                vmHeader.imageSrc = "/onlinelearning/verifyimage.action?rand=" + Math.random();
+                $("#loginModal").modal("show");
+            },
+            login: function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/onlinelearning/user/login.action",
+                    data: $("#loginForm").serialize(),
+                    success: function (data) {
+                        if (data.status == "success") {
+                            $("#loginModal").modal("hide");
+                            location.reload();
+                        } else {
+                            $("#loginErrorTip").html(data.status);
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            },
+            logout: function () {
+                $.ajax({
+                    url: "/onlinelearning/user/logout.action",
+                    type: "post",
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        location.reload();
+                    }
+                });
+            },
+            changeVerifyCode: function () {
+                $.ajax({
+                    url: "/onlinelearning/changeverifycode.action",
+                    success: function () {
+                        vmHeader.imageSrc = "/onlinelearning/verifyimage.action?rand=" + Math.random();
+                    }
+                })
+            },
+            reload: function () {
+                vmHeader.checkUser();
+            },
+            showRegistModal: function () {
+                $("#registModal").modal("show");
+            },
+            showRegisterModal: function () {
+                vmHeader.showRegistModal();
+            },
+            register: function () {
+                if (!vmHeader.regist.isValidPassword) {
+                    return;
+                }
+
+                $.ajax({
+                    url: "/onlinelearning/user/register.action",
+                    type: "POST",
+                    cache: false,
+                    data: $("#registForm").serialize(),
+                    success: function (data) {
+                        if (data.status == "success") {
+                            alert("注册成功，请您登陆");
+                            $("#registModal").modal("hide");
+                            $("#loginModal").modal("show");
+                        } else {
+                            alert(data.status);
+                        }
+                    },
+
+                    error: function () {
+                        alert("可能是年龄有问题，请您重新尝试");
+                    }
+                });
+            },
+            checkPassword: function () {
+                if (vmHeader.regist.password == vmHeader.regist.password2) {
+                    vmHeader.regist.isValidPassword = true;
+                } else {
+                    vmHeader.regist.isValidPassword = false;
+                }
+            },
+            addReceived(func) {
+                funcs.push(func);
+            },
+            jumpToUserPage() {
+                window.location.href="/onlinelearning/user/user.html";
+            }
+        }
+    });
+
+    vmHeader.reload();
+
+</script>

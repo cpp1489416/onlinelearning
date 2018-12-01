@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+    <meta HTTP-EQUIV="expires" CONTENT="0">
+    <title>自己的课程</title>
+    <script src="../js/jquery-3.3.1.js"></script>
+    <link href="../css/bootstrap.css" rel="stylesheet" />
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../../js/main.js"></script>
+</head>
+
+<body>
+    <div id="header" style="min-height:51px; margin-bottom:20px;"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <div>
+                    <a href="usermanage.html" class="list-group-item">用户管理</a>
+                    <a href="commentmanage.html" class="list-group-item active">用户评价</a>
+                </div>
+
+            </div>
+            <div class="col-sm-10">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        你好
+                    </div>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>用户昵称</th>
+                                <th>课程名称</th>
+                                <th>评价</th>
+                            </tr>
+                        </thead>
+    
+                        <tbody id="tableBody">
+                            <tr>
+                                <td>￥￥￥￥</td>
+                                <td>￥￥￥￥￥</td>
+                                <td>￥￥￥￥￥￥￥</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function() {
+            $.ajaxSetup({ cache: false });
+            init();
+        });
+
+        function init() {
+            $("#passwordDiv").addClass("hidden");
+            $("#password2Div").addClass("hidden");
+            $("#submitButton").addClass("hidden");
+            $.ajax({
+                url: "../userinfo.action",
+                type: "POST",
+                async: true,
+                cache: false,
+                success: function(data) {
+                    if (data == null || data == "") {
+                        alert("请先登陆");
+                        window.location.href="../../index.html";
+                        return;
+                    }
+
+                    if (!data.isRoot) {
+                        alert("对不起，您没有权力访问这个页面。");
+                        return;
+                    }
+                    loadComments();
+                },
+                error: function() {
+                }
+            })
+        }
+
+        function loadComments() {
+            $.ajax({
+                url: "comments.action",
+                type: "post",
+                success: function(data) {
+                    var str = "";
+                    for (var i = 0; i < data.length; ++i) {
+                        var token = `
+                            <tr>
+                                <td><a href="#" onclick=jumptoUserManage("username")>nickname</a></td>
+                                <td><a href="#" onclick=jumptoCourse(courseId)>courseName</a></td>
+                                <td>comment</td>
+                            </tr>`;
+                        var comment = data[i];
+                        token = token.replace(/username/g, comment.user.username);
+                        token = token.replace(/nickname/g, comment.user.nickname);
+                        token = token.replace(/courseId/g, comment.courseId);
+                        token = token.replace(/courseName/g, comment.course.courseName);
+                        token = token.replace(/comment/g, comment.comment);
+                        str += token;
+                    }
+                    $("#tableBody").html(str);
+                },
+                error: function() {
+                    alert("无法连接到服务器");
+                }
+            });
+        }
+        
+        function jumptoCourse(courseId) {
+            window.location.href="../learn/learncourse.html?courseId=" + courseId;
+        }
+        
+        function jumptoUserManage(username) {
+            window.location.href="usermanage.html?username=" + username;
+        }
+    </script>
+</body>
+
+</html>
